@@ -70,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     width: 32, height: 32,
                     decoration: BoxDecoration(
-                      color:        AppColors.primaryLight,
+                      color: AppColors.primaryLight,
                       borderRadius: AppRadius.radiusSm,
                     ),
                     child: const Icon(Icons.settings_outlined,
@@ -168,7 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   Container(
                     decoration: BoxDecoration(
-                      color:        AppColors.surfaceAlt,
+                      color: AppColors.surfaceAlt,
                       borderRadius: AppRadius.radiusMd,
                       border:       Border.all(color: AppColors.border),
                     ),
@@ -186,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         borderRadius:  BorderRadius.circular(12),
                         items: _languages
                             .map((l) =>
-                                DropdownMenuItem(value: l, child: Text(l)))
+                            DropdownMenuItem(value: l, child: Text(l)))
                             .toList(),
                         onChanged: (v) => setState(() => _language = v!),
                       ),
@@ -280,7 +280,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ElevatedButton(
             onPressed: () {
+              // 1. Close the confirmation dialog
               Navigator.pop(context);
+              // 2. Pop all pushed screens back to the AuthWrapper root so
+              //    it can render LoginScreen cleanly.
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              // 3. Clear auth state — AuthWrapper rebuilds to LoginScreen.
               context.read<AuthProvider>().logout();
             },
             style: ElevatedButton.styleFrom(
@@ -310,7 +315,7 @@ class _SectionCard extends StatelessWidget {
       width:   double.infinity,
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color:        AppColors.surface,
+        color: AppColors.surface,
         borderRadius: AppRadius.radiusLg,
         border:       Border.all(color: AppColors.border),
         boxShadow:    AppShadows.sm,
@@ -336,7 +341,7 @@ class _SectionHeader extends StatelessWidget {
       Container(
         width: 36, height: 36,
         decoration: BoxDecoration(
-          color:        AppColors.primaryLight,
+          color: AppColors.primaryLight,
           borderRadius: AppRadius.radiusMd,
         ),
         child: Icon(icon, color: AppColors.primary, size: 18),
@@ -436,24 +441,24 @@ class _RadioRow extends StatelessWidget {
           Container(
             width: 20, height: 20,
             decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary : AppColors.textMuted,
               shape:  BoxShape.circle,
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.textMuted,
                 width: 2,
               ),
             ),
             child: isSelected
                 ? Center(
-                    child: Container(
-                      width: 10, height: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: filledDot
-                            ? AppColors.textDark
-                            : AppColors.primary,
-                      ),
-                    ),
-                  )
+              child: Container(
+                width: 10, height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: filledDot
+                      ? AppColors.textDark
+                      : AppColors.primary,
+                ),
+              ),
+            )
                 : null,
           ),
           const SizedBox(width: AppSpacing.md),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'auth_provider.dart';
-import 'login_screen.dart';
+import '../providers/auth_provider.dart';
 
 class SmartFarmDashboard extends StatefulWidget {
   const SmartFarmDashboard({super.key});
@@ -60,11 +59,11 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
   ];
 
   void _logout(BuildContext context) {
+    // Pop all pushed screens back to the AuthWrapper root first,
+    // THEN clear auth state so AuthWrapper can render LoginScreen cleanly.
+    // Do NOT use Navigator.pushReplacement — AuthWrapper handles routing.
+    Navigator.of(context).popUntil((route) => route.isFirst);
     context.read<AuthProvider>().logout();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
   }
 
   @override
@@ -100,8 +99,8 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
 
     return Container(
       height: 64,
-      color: Colors.white,
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           bottom: BorderSide(color: Colors.black.withOpacity(0.08), width: 1.33),
         ),
@@ -246,7 +245,7 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
                     size: 16, color: Color(0xFF6B7280)),
                 label: const Text('Logout',
                     style:
-                        TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+                    TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
               ),
             ],
           ),
@@ -283,12 +282,12 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: isSelected
                       ? [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 3,
-                            offset: const Offset(0, 1),
-                          ),
-                        ]
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
                       : null,
                 ),
                 child: Row(
