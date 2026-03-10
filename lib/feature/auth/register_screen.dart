@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../utils/app_theme.dart';
-import '../widgets/auth_widgets.dart';
+import 'package:smart_farm/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/auth_widgets.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {

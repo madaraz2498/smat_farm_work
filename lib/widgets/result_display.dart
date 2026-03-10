@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/app_colors.dart';
+import 'package:smart_farm/theme/app_theme.dart';
 
 /// Reusable AI result card shown after any model analysis completes.
 ///
@@ -11,17 +11,6 @@ import '../core/app_colors.dart';
 ///
 /// This widget has NO Scaffold / AppBar of its own — it is a pure body widget
 /// intended to be embedded inside any page's content area.
-///
-/// Usage:
-/// ```dart
-/// ResultDisplay(
-///   statusLabel: 'Healthy',
-///   isPositive: true,
-///   confidenceLabel: 'Confidence',
-///   confidence: 0.92,
-///   detail: 'Tomato — Late Blight (92%)',
-/// )
-/// ```
 class ResultDisplay extends StatelessWidget {
   const ResultDisplay({
     super.key,
@@ -49,7 +38,8 @@ class ResultDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeColor = isPositive ? AppColors.primary : AppColors.danger;
+    // Using professional semantic colors: primary for positive, error for negative
+    final badgeColor = isPositive ? AppColors.primary : AppColors.error;
     final percentText = '${(confidence * 100).round()}%';
 
     return Container(
@@ -59,13 +49,7 @@ class ResultDisplay extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 3,
-            offset: Offset(0, 1),
-          ),
-        ],
+        boxShadow: AppShadows.sm, // Using unified shadow tokens
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +58,7 @@ class ResultDisplay extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: badgeColor.withValues(alpha: 0.12),
+              color: badgeColor.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -96,7 +80,7 @@ class ResultDisplay extends StatelessWidget {
                 confidenceLabel,
                 style: const TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: AppColors.textMuted,
                 ),
               ),
               Text(
@@ -104,7 +88,7 @@ class ResultDisplay extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textDark,
                 ),
               ),
             ],
@@ -129,7 +113,7 @@ class ResultDisplay extends StatelessWidget {
               detail!,
               style: const TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: AppColors.textMuted,
               ),
             ),
           ],

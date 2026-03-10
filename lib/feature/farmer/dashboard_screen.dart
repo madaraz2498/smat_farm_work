@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../providers/navigation_provider.dart';
-import '../utils/app_theme.dart';
-import '../widgets/auth_widgets.dart';
-import 'plant_disease_screen.dart';
-import 'animal_weight_screen.dart';
-import 'crop_recommendation_screen.dart';
-import 'soil_analysis_screen.dart';
-import 'fruit_quality_screen.dart';
-import 'chatbot_screen.dart';
+import 'package:smart_farm/feature/ai-models/animal_weight_screen.dart';
+import 'package:smart_farm/feature/ai-models/fruit_quality_screen.dart';
+import 'package:smart_farm/feature/ai-models/plant_disease_screen.dart';
+import 'package:smart_farm/feature/ai-models/soil_analysis_screen.dart';
+import 'package:smart_farm/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/navigation_provider.dart';
+import '../../widgets/auth_widgets.dart';
+import '../ai-models/crop_recommendation_screen.dart';
+import '../ai-models/chatbot_screen.dart';
 import 'reports_screen.dart';
-import 'settings_screen.dart';
+import '../settings/settings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});

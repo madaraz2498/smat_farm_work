@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_farm/providers/auth_provider.dart';// Import your screen files here:
-import 'package:smart_farm/screens/dashboard_screen.dart';
-import 'package:smart_farm/screens/login_screen.dart';
+import 'package:smart_farm/feature/farmer/dashboard_screen.dart';
+import 'package:smart_farm/feature/auth/login_screen.dart';
 
 /// Listens to [AuthProvider] and redirects automatically:
 /// - Authenticated  → DashboardScreen

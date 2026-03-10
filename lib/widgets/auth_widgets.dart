@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/app_theme.dart';
+import 'package:smart_farm/theme/app_theme.dart';
 
 // ─── SmartFarm Logo Icon ──────────────────────────────────────────────────────
 class AppLogo extends StatelessWidget {

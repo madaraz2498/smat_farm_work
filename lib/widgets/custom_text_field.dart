@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/app_colors.dart';
+import 'package:smart_farm/theme/app_theme.dart';
 
 /// Reusable styled text field used across login, register, and all feature forms.
 ///
@@ -52,22 +52,22 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Original decoration from _buildTextField / _buildPasswordField
+      // Original decoration matching the professional design tokens
       decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(20),       // original: 20
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: isPassword && obscureText,
-        style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+        style: const TextStyle(fontSize: 16, color: AppColors.textDark),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
             fontSize: 16,
-            color: AppColors.textHint,
+            color: AppColors.textMuted.withOpacity(0.6),
           ),
           border: InputBorder.none,
           // Original content padding: horizontal 17, vertical 15
@@ -79,7 +79,7 @@ class CustomTextField extends StatelessWidget {
                     obscureText
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textMuted,
                     size: 20,
                   ),
                 )

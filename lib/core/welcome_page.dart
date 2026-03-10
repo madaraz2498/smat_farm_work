@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farm/theme/app_theme.dart';
 
-import '../core/app_colors.dart';
 import '../core/app_strings.dart';
 import '../models/feature_model.dart';
 import '../models/nav_item_model.dart';
@@ -64,10 +64,6 @@ final List<FeatureModel> dashboardFeatures = const [
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Top-level shell for the authenticated app experience.
-///
-/// ✅ Verified: contains exactly ONE Scaffold.
-/// ✅ Verified: sub-pages (e.g. WelcomeBody) have no Scaffold / AppBar.
-/// ✅ Zero visual changes from the original welcome_screen.dart.
 class SmartFarmDashboard extends StatefulWidget {
   const SmartFarmDashboard({super.key});
 
@@ -98,8 +94,6 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
                     selectedIndex: _selectedIndex,
                     onSelect: (i) => setState(() => _selectedIndex = i),
                   ),
-                // Body area — insert the correct page widget here based on _selectedIndex.
-                // For now, index 0 shows WelcomeBody; all others show a placeholder.
                 Expanded(
                   child: _selectedIndex == 0
                       ? const WelcomeBody()
@@ -131,33 +125,33 @@ class _AppNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 64,                                           // original: 64
+      height: 64,
       color: AppColors.surface,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
             color: AppColors.border,
-            width: 1.33,                                    // original: 1.33
+            width: 1.33,
           ),
         ),
-        boxShadow: const [
-          BoxShadow(color: AppColors.shadow, blurRadius: 3, offset: Offset(0, 1)),
+        boxShadow: [
+          BoxShadow(color: AppColors.border, blurRadius: 3, offset: Offset(0, 1)),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 32), // original: 32
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Row(
         children: [
           // Logo + App Name
           Row(
             children: [
               Container(
-                width: 40,                                  // original: 40
+                width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(20), // original: 20
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
-                    BoxShadow(color: AppColors.shadow, blurRadius: 6, offset: Offset(0, 4)),
+                    BoxShadow(color: AppColors.border, blurRadius: 6, offset: Offset(0, 4)),
                   ],
                 ),
                 child: const Icon(Icons.eco, color: AppColors.surface, size: 24),
@@ -165,7 +159,7 @@ class _AppNavBar extends StatelessWidget {
               const SizedBox(width: 12),
               const Text(
                 AppStrings.appName,
-                style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 16, color: AppColors.textDark),
               ),
             ],
           ),
@@ -175,7 +169,7 @@ class _AppNavBar extends StatelessWidget {
             child: Center(
               child: Text(
                 AppStrings.welcomePageTitle,
-                style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 16, color: AppColors.textDark),
               ),
             ),
           ),
@@ -189,7 +183,7 @@ class _AppNavBar extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-                    child: const Icon(Icons.notifications_outlined, size: 20, color: AppColors.textPrimary),
+                    child: const Icon(Icons.notifications_outlined, size: 20, color: AppColors.textDark),
                   ),
                   Positioned(
                     right: 4,
@@ -197,7 +191,7 @@ class _AppNavBar extends StatelessWidget {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(color: AppColors.danger, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(color: AppColors.notifRed, shape: BoxShape.circle),
                     ),
                   ),
                 ],
@@ -207,18 +201,18 @@ class _AppNavBar extends StatelessWidget {
               // Theme toggle
               Container(
                 padding: const EdgeInsets.all(8),
-                child: const Icon(Icons.wb_sunny_outlined, size: 20, color: AppColors.textPrimary),
+                child: const Icon(Icons.wb_sunny_outlined, size: 20, color: AppColors.textDark),
               ),
               const SizedBox(width: 4),
 
               // User chip
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // original: 12/6
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 child: Row(
                   children: [
                     Container(
-                      width: 32,                            // original: 32
+                      width: 32,
                       height: 32,
                       decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
                       child: const Icon(Icons.person, color: AppColors.surface, size: 16),
@@ -228,8 +222,8 @@ class _AppNavBar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(userName, style: const TextStyle(fontSize: 14, color: AppColors.textPrimary)),
-                        Text(userRole, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                        Text(userName, style: const TextStyle(fontSize: 14, color: AppColors.textDark)),
+                        Text(userRole, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                       ],
                     ),
                   ],
@@ -261,28 +255,28 @@ class _AppSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 256,                                           // original: 256
+      width: 256,
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(right: BorderSide(color: AppColors.border, width: 1.33)),
       ),
       child: ListView(
-        padding: const EdgeInsets.all(16),                 // original: 16
+        padding: const EdgeInsets.all(16),
         children: List.generate(navItems.length, (i) {
           final item = navItems[i];
           final isSelected = selectedIndex == i;
           return Padding(
-            padding: const EdgeInsets.only(bottom: 4),    // original: 4
+            padding: const EdgeInsets.only(bottom: 4),
             child: InkWell(
               onTap: () => onSelect(i),
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // original: 16/12
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20), // original: 20
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: isSelected
-                      ? const [BoxShadow(color: AppColors.shadow, blurRadius: 3, offset: Offset(0, 1))]
+                      ? const [BoxShadow(color: AppColors.border, blurRadius: 3, offset: Offset(0, 1))]
                       : null,
                 ),
                 child: Row(
@@ -290,7 +284,7 @@ class _AppSidebar extends StatelessWidget {
                     Icon(
                       item.icon,
                       size: 20,
-                      color: isSelected ? AppColors.surface : AppColors.textPrimary,
+                      color: isSelected ? AppColors.surface : AppColors.textDark,
                     ),
                     const SizedBox(width: 12),
                     Flexible(
@@ -298,9 +292,9 @@ class _AppSidebar extends StatelessWidget {
                         item.label,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: item.label.length > 20 ? 13 : 14,   // original logic
-                          color: isSelected ? AppColors.surface : AppColors.textPrimary,
-                          letterSpacing: item.label.length > 20 ? -0.325 : 0, // original logic
+                          fontSize: item.label.length > 20 ? 13 : 14,
+                          color: isSelected ? AppColors.surface : AppColors.textDark,
+                          letterSpacing: item.label.length > 20 ? -0.325 : 0,
                         ),
                       ),
                     ),
@@ -330,109 +324,69 @@ class _AppBottomNav extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: onTap,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textSecondary,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined),           label: AppStrings.bottomNavHome),
-        BottomNavigationBarItem(icon: Icon(Icons.local_florist_outlined),  label: AppStrings.bottomNavPlant),
-        BottomNavigationBarItem(icon: Icon(Icons.monitor_weight_outlined), label: AppStrings.bottomNavAnimal),
-        BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline),     label: AppStrings.bottomNavChat),
-      ],
+      items: List.generate(4, (i) {
+        final item = appNavItems[i];
+        return BottomNavigationBarItem(
+          icon: Icon(item.icon),
+          label: item.label,
+        );
+      }),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Welcome Body — NO Scaffold, NO AppBar, NO Sidebar
+// Main Body Content
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// The content area shown when the Welcome nav item is selected.
-///
-/// ✅ This widget has no Scaffold, AppBar, or Sidebar — it is a pure body widget.
-/// It is injected into the Expanded content slot inside [SmartFarmDashboard].
 class WelcomeBody extends StatelessWidget {
   const WelcomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final availableWidth = screenWidth > 600 ? screenWidth - 256 : screenWidth;
-    final crossAxisCount = availableWidth > 900 ? 3 : availableWidth > 600 ? 2 : 1;
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(32),                   // original: 32
+      padding: const EdgeInsets.all(32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting
-          Text(
-            '${AppStrings.welcomeGreetingPrefix}${AppStrings.defaultUserName}',
-            style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+          const Text (
+            AppStrings.welcomePageTitle,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
-          const SizedBox(height: 7),                        // original: 7
+          const SizedBox(height: 8),
           const Text(
             AppStrings.welcomeSubtitle,
-            style: TextStyle(fontSize: 18, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textMuted),
           ),
-          const SizedBox(height: 32),                       // original: 32
-
-          // Feature grid
-          _FeatureGrid(crossAxisCount: crossAxisCount),
+          const SizedBox(height: 32),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 400,
+              mainAxisSpacing: 24,
+              crossAxisSpacing: 24,
+              childAspectRatio: 2.1,
+            ),
+            itemCount: dashboardFeatures.length,
+            itemBuilder: (context, index) => FeatureCard(feature: dashboardFeatures[index]),
+          ),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Feature Grid
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _FeatureGrid extends StatelessWidget {
-  const _FeatureGrid({required this.crossAxisCount});
-
-  final int crossAxisCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final cardWidth =
-            (constraints.maxWidth - (crossAxisCount - 1) * 24) / crossAxisCount;
-        const cardHeight = 192.0;                          // original: 192
-
-        return Wrap(
-          spacing: 24,                                      // original: 24
-          runSpacing: 24,
-          children: dashboardFeatures.map((feature) {
-            return SizedBox(
-              width: cardWidth,
-              height: cardHeight,
-              child: FeatureCard(feature: feature),
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Placeholder Body — shown for nav items not yet implemented
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _PlaceholderBody extends StatelessWidget {
   const _PlaceholderBody({required this.title});
-
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, color: AppColors.textSecondary),
+        'Content for $title coming soon...',
+        style: const TextStyle(fontSize: 18, color: AppColors.textMuted),
       ),
     );
   }

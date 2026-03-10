@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/app_colors.dart';
+import 'package:smart_farm/theme/app_theme.dart';
 
 /// Reusable primary action button used for Sign In, Create Account,
 /// Estimate, Analyze, and all other CTA buttons across the app.
@@ -35,7 +35,7 @@ class ActionButton extends StatelessWidget {
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.surface,
           elevation: 1,
-          shadowColor: AppColors.shadow,
+          shadowColor: AppColors.textDark,
           // Original padding: vertical 12, horizontal 24
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           shape: RoundedRectangleBorder(

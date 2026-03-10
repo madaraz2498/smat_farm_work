@@ -1,71 +1,66 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../widgets/custom_app_bar.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/custom_app_bar.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FRUIT QUALITY ANALYSIS SCREEN
+// PLANT DISEASE DETECTION SCREEN
 // Layout:
 //   Page heading + subtitle
-//   White card: apple icon / image preview / Choose Image + Analyze Fruit
-//   White card: "Analysis Results" with Quality Grade (highlighted), Ripeness,
-//               Defect Detection rows
+//   White card: leaf icon / image preview / Choose Image + Analyze Image
+//   White card: "Analysis Result" with Status badge row + Confidence bar
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ─── Controller ───────────────────────────────────────────────────────────────
 
-enum FruitQualityStatus { idle, loading, result, error }
+enum PlantScanStatus { idle, loading, result, error }
 
-class FruitResult {
-  final String grade;        // 'A', 'B', 'C'
-  final String gradeLabel;   // 'Premium quality - Ready for market'
-  final String ripeness;
-  final String defects;
-  const FruitResult({
-    required this.grade,
-    required this.gradeLabel,
-    required this.ripeness,
-    required this.defects,
+class PlantDiseaseResult {
+  final String  status;     // e.g. "Healthy Plant" or disease name
+  final bool    isHealthy;
+  final double  confidence; // 0.0 – 1.0
+  const PlantDiseaseResult({
+    required this.status,
+    required this.isHealthy,
+    required this.confidence,
   });
 }
 
-class FruitQualityController extends ChangeNotifier {
-  FruitQualityStatus _status = FruitQualityStatus.idle;
-  String?            _imagePath;
-  FruitResult?       _result;
-  String?            _errorMessage;
+class PlantDiseaseController extends ChangeNotifier {
+  PlantScanStatus     _status = PlantScanStatus.idle;
+  String?             _imagePath;
+  PlantDiseaseResult? _result;
+  String?             _errorMessage;
 
-  FruitQualityStatus get status       => _status;
-  String?            get imagePath    => _imagePath;
-  FruitResult?       get result       => _result;
-  String?            get errorMessage => _errorMessage;
+  PlantScanStatus     get status       => _status;
+  String?             get imagePath    => _imagePath;
+  PlantDiseaseResult? get result       => _result;
+  String?             get errorMessage => _errorMessage;
 
-  // TODO: POST multipart to YOUR_API/fruit-quality
-  // Response: { "grade": "A", "grade_label": String, "ripeness": String,
-  //             "defects": String }
-  Future<void> analyze(String path) async {
+  // TODO: POST multipart to YOUR_API/plant-disease
+  // Response: { "status": String, "is_healthy": bool, "confidence": double }
+  Future<void> analyzeImage(String path) async {
     _imagePath    = path;
-    _status       = FruitQualityStatus.loading;
+    _status       = PlantScanStatus.loading;
     _result       = null;
     _errorMessage = null;
     notifyListeners();
     try {
       await Future.delayed(const Duration(seconds: 2));
-      _result = const FruitResult(
-        grade:      'A',
-        gradeLabel: 'Premium quality - Ready for market',
-        ripeness:   'Ripe',
-        defects:    'Minor surface blemishes',
+      _result = const PlantDiseaseResult(
+        status:     'Healthy Plant',
+        isHealthy:  true,
+        confidence: 0.95,
       );
-      _status = FruitQualityStatus.result;
+      _status = PlantScanStatus.result;
     } catch (_) {
       _errorMessage = 'Analysis failed. Please try again.';
-      _status       = FruitQualityStatus.error;
+      _status       = PlantScanStatus.error;
     }
     notifyListeners();
   }
 
   void reset() {
-    _status       = FruitQualityStatus.idle;
+    _status       = PlantScanStatus.idle;
     _imagePath    = null;
     _result       = null;
     _errorMessage = null;
@@ -75,26 +70,26 @@ class FruitQualityController extends ChangeNotifier {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-class FruitQualityScreen extends StatefulWidget {
-  const FruitQualityScreen({super.key});
+class PlantDiseaseScreen extends StatefulWidget {
+  const PlantDiseaseScreen({super.key});
   @override
-  State<FruitQualityScreen> createState() => _FruitQualityScreenState();
+  State<PlantDiseaseScreen> createState() => _PlantDiseaseScreenState();
 }
 
-class _FruitQualityScreenState extends State<FruitQualityScreen> {
-  final _ctrl = FruitQualityController();
+class _PlantDiseaseScreenState extends State<PlantDiseaseScreen> {
+  final _ctrl = PlantDiseaseController();
   @override
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
-  void _pickImage() => _ctrl.analyze('mock_path');
+  void _pickImage() => _ctrl.analyzeImage('mock_path');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FeatureAppBar(
-        title:   'Fruit Quality Analysis',
-        svgPath: 'assets/images/icons/fruit_icon.svg',
+        title:   'Plant Disease Detection (CNN)',
+        svgPath: 'assets/images/icons/plant_icon.svg',
       ),
       body: AnimatedBuilder(
         animation: _ctrl,
@@ -107,7 +102,7 @@ class _FruitQualityScreenState extends State<FruitQualityScreen> {
 // ─── Body ─────────────────────────────────────────────────────────────────────
 
 class _Body extends StatelessWidget {
-  final FruitQualityController ctrl;
+  final PlantDiseaseController ctrl;
   final VoidCallback onPick;
   const _Body({required this.ctrl, required this.onPick});
 
@@ -123,26 +118,27 @@ class _Body extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _PageHeading(
-                title:    'Fruit Quality Analysis',
-                subtitle: 'Upload fruit image for computer vision-based quality grading',
+                title:    'Plant Disease Detection',
+                subtitle: 'Upload a plant leaf image for AI-powered disease diagnosis using CNN',
               ),
               const SizedBox(height: AppSpacing.xl),
 
               _ImageCard(
-                imagePath:    ctrl.imagePath,
-                isLoading:    ctrl.status == FruitQualityStatus.loading,
-                onPick:       onPick,
-                analyzeLabel: 'Analyze Fruit',
+                imagePath: ctrl.imagePath,
+                isLoading: ctrl.status == PlantScanStatus.loading,
+                onPick:    onPick,
+                iconData:  Icons.eco_outlined,
+                analyzeLabel: 'Analyze Image',
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              if (ctrl.status == FruitQualityStatus.result &&
+              if (ctrl.status == PlantScanStatus.result &&
                   ctrl.result != null) ...[
                 _AnalysisResultCard(result: ctrl.result!),
                 const SizedBox(height: AppSpacing.xl),
               ],
 
-              if (ctrl.status == FruitQualityStatus.error &&
+              if (ctrl.status == PlantScanStatus.error &&
                   ctrl.errorMessage != null)
                 _ErrorBanner(ctrl.errorMessage!),
             ],
@@ -176,18 +172,20 @@ class _PageHeading extends StatelessWidget {
   }
 }
 
-// ─── Image card ───────────────────────────────────────────────────────────────
+// ─── Image card (shared pattern) ─────────────────────────────────────────────
 
 class _ImageCard extends StatelessWidget {
   final String?      imagePath;
   final bool         isLoading;
   final VoidCallback onPick;
+  final IconData     iconData;
   final String       analyzeLabel;
 
   const _ImageCard({
     required this.imagePath,
     required this.isLoading,
     required this.onPick,
+    required this.iconData,
     required this.analyzeLabel,
   });
 
@@ -204,15 +202,13 @@ class _ImageCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Apple icon chip
           Container(
             width: 56, height: 56,
             decoration: BoxDecoration(
               color:        AppColors.primaryLight,
               borderRadius: AppRadius.radiusMd,
             ),
-            child: const Icon(Icons.apple_outlined,
-                color: AppColors.primary, size: 28),
+            child: Icon(iconData, color: AppColors.primary, size: 28),
           ),
           const SizedBox(height: AppSpacing.lg),
 
@@ -282,21 +278,17 @@ class _ImageCard extends StatelessWidget {
 // ─── Analysis result card ─────────────────────────────────────────────────────
 
 class _AnalysisResultCard extends StatelessWidget {
-  final FruitResult result;
+  final PlantDiseaseResult result;
   const _AnalysisResultCard({required this.result});
-
-  Color get _gradeColor {
-    switch (result.grade) {
-      case 'A': return AppColors.primary;
-      case 'B': return AppColors.warning;
-      default:  return AppColors.error;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final tt    = Theme.of(context).textTheme;
-    final color = _gradeColor;
+    final color = result.isHealthy ? AppColors.primary : AppColors.error;
+    final bgCol = result.isHealthy ? AppColors.primaryLight : AppColors.errorLight;
+    final borderCol = result.isHealthy
+        ? AppColors.primary.withOpacity(0.25)
+        : AppColors.errorBorder;
 
     return Container(
       width:   double.infinity,
@@ -310,81 +302,87 @@ class _AnalysisResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Analysis Results',
+          Text('Analysis Result',
               style: tt.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600, color: AppColors.textDark)),
           const SizedBox(height: AppSpacing.lg),
 
-          // Quality Grade highlighted box
+          // Status badge row
           Container(
             width:   double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg, vertical: AppSpacing.md),
             decoration: BoxDecoration(
-              color:        color.withOpacity(0.08),
+              color:        bgCol,
               borderRadius: AppRadius.radiusMd,
-              border:       Border.all(color: color.withOpacity(0.25)),
+              border:       Border.all(color: borderCol),
+            ),
+            child: Row(children: [
+              Icon(result.isHealthy
+                  ? Icons.check_circle_outline
+                  : Icons.warning_amber_outlined,
+                  color: color, size: 20),
+              const SizedBox(width: AppSpacing.sm),
+              RichText(
+                text: TextSpan(
+                  style: tt.bodyMedium,
+                  children: [
+                    TextSpan(
+                        text: 'Status: ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark)),
+                    TextSpan(
+                        text: result.status,
+                        style: TextStyle(
+                            color: color, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          // Confidence
+          Container(
+            width:   double.infinity,
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+            decoration: BoxDecoration(
+              color:        AppColors.surface,
+              borderRadius: AppRadius.radiusMd,
+              border:       Border.all(color: AppColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Quality Grade',
-                    style: tt.bodySmall?.copyWith(
-                        color: AppColors.textMuted)),
-                const SizedBox(height: 4),
-                Text('Grade ${result.grade}',
-                    style: tt.titleLarge?.copyWith(
-                      color:      color,
-                      fontWeight: FontWeight.w700,
-                    )),
-                const SizedBox(height: 2),
-                Text(result.gradeLabel,
-                    style: tt.bodySmall?.copyWith(
-                        color: AppColors.textMuted)),
+                RichText(
+                  text: TextSpan(
+                    style: tt.bodyMedium?.copyWith(color: AppColors.textDark),
+                    children: [
+                      const TextSpan(
+                          text: 'Confidence: ',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      TextSpan(
+                          text:
+                              '${(result.confidence * 100).toStringAsFixed(0)}%'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                ClipRRect(
+                  borderRadius: AppRadius.radiusFull,
+                  child: LinearProgressIndicator(
+                    value:           result.confidence,
+                    minHeight:       8,
+                    backgroundColor: const Color(0xFFE5E7EB),
+                    valueColor: AlwaysStoppedAnimation(color),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
-
-          // Ripeness Level
-          _InfoRow(label: 'Ripeness Level', value: result.ripeness),
-          const SizedBox(height: AppSpacing.md),
-
-          // Defect Detection
-          _InfoRow(label: 'Defect Detection', value: result.defects),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Info row ─────────────────────────────────────────────────────────────────
-
-class _InfoRow extends StatelessWidget {
-  final String label, value;
-  const _InfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return Container(
-      width:   double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
-      decoration: BoxDecoration(
-        color:        AppColors.surface,
-        borderRadius: AppRadius.radiusMd,
-        border:       Border.all(color: AppColors.border),
-      ),
-      child: RichText(
-        text: TextSpan(
-          style: tt.bodyMedium?.copyWith(color: AppColors.textDark),
-          children: [
-            TextSpan(
-                text: '$label: ',
-                style: const TextStyle(fontWeight: FontWeight.w600)),
-            TextSpan(text: value),
-          ],
-        ),
       ),
     );
   }
