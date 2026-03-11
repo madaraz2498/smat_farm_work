@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_farm/providers/auth_provider.dart';// Import your screen files here:
-import 'package:smart_farm/feature/farmer/dashboard_screen.dart';
+import 'package:smart_farm/feature/farmer/dashboard/welcome_screen.dart';
 import 'package:smart_farm/feature/auth/login_screen.dart';
 
 /// Listens to [AuthProvider] and redirects automatically:
@@ -17,7 +17,7 @@ class AuthWrapper extends StatelessWidget {
 
     switch (auth.status) {
       case AuthStatus.authenticated:
-        return const DashboardScreen();
+        return const WelcomeScreen();
 
       case AuthStatus.unauthenticated:
         return const LoginScreen();

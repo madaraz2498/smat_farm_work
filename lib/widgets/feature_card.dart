@@ -17,10 +17,10 @@ class FeatureCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -35,7 +35,7 @@ class FeatureCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: AppColors.primarySurface,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(feature.icon, color: AppColors.primary, size: 24),
@@ -55,7 +55,7 @@ class FeatureCard extends StatelessWidget {
               feature.description,
               style: const TextStyle(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: AppColors.textSubtle,
                 height: 1.5,
               ),
             ),

@@ -1,33 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_farm/feature/admin/admin_dashboard_screen.dart';
-import 'package:smart_farm/feature/settings/settings_screen.dart';
-import 'providers/auth_provider.dart';
-import 'providers/navigation_provider.dart';
-import 'feature/farmer/dashboard_screen.dart';
-import 'theme/app_theme.dart';
+import 'package:smart_farm/feature/farmer/dashboard/welcome_screen.dart';
+import 'package:smart_farm/theme/app_theme.dart';
+import 'package:smart_farm/providers/auth_provider.dart';
+import 'package:smart_farm/providers/navigation_provider.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Smart Farm AI — Development Entry Point
+// main.dart  —  Production-ready entry point.
 //
-// ⚠️  AUTH IS FULLY DISABLED.
-//     The app opens directly to DashboardScreen every time.
-//     All sidebar items (including Admin Dashboard) are freely accessible.
-//
-// To restore auth for production:
-//   1. Set kDevBypassAuth = false in lib/providers/auth_provider.dart
-//   2. Change home: below to const AuthWrapper()
-//   3. Import screens/auth_wrapper.dart
+// MultiProvider provides global access to Auth and Navigation states.
 // ─────────────────────────────────────────────────────────────────────────────
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [
-        // AuthProvider starts pre-authenticated (mock Farmer) so the
-        // NavBar / Sidebar show a name + role on the very first frame.
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        // NavigationProvider drives the sidebar highlight index.
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
       child: const SmartFarmApp(),
@@ -43,9 +31,27 @@ class SmartFarmApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Farm AI',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      // ── DEV: open the dashboard directly — zero login, zero auth check ─────
-      home: const AdminDashboardScreen(),
+
+      // ── Theme ────────────────────────────────────────────────────────────
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: AppColors.primary,
+        scaffoldBackgroundColor: AppColors.background,
+        fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.topBarBg,
+          foregroundColor: AppColors.textDark,
+          elevation: 0,
+        ),
+      ),
+
+      // ── Entry point ──────────────────────────────────────────────────
+      home: const WelcomeScreen(),
+
+      // ── Named routes ─────────────────────────────────────────────────
+      routes: {
+        '/dashboard': (_) => const WelcomeScreen(),
+      },
     );
   }
 }

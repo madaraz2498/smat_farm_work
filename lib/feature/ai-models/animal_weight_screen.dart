@@ -4,21 +4,14 @@ import '../../widgets/custom_app_bar.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ANIMAL WEIGHT ESTIMATION SCREEN
-// Layout (top → bottom):
-//   Page heading + subtitle
-//   White card: eye-icon chip / image preview / Choose Image + Estimate Weight
-//   White card: "Estimation Result" with green highlighted weight box,
-//               Animal Type row, Confidence Score + LinearProgressIndicator
 // ═══════════════════════════════════════════════════════════════════════════════
-
-// ─── Controller ───────────────────────────────────────────────────────────────
 
 enum AnimalWeightStatus { idle, loading, result, error }
 
 class AnimalWeightResult {
   final double weightKg;
   final String animalType;
-  final double confidence; // 0.0 – 1.0
+  final double confidence;
   const AnimalWeightResult({
     required this.weightKg,
     required this.animalType,
@@ -37,11 +30,6 @@ class AnimalWeightController extends ChangeNotifier {
   AnimalWeightResult? get result       => _result;
   String?             get errorMessage => _errorMessage;
 
-  // ── TODO: replace mock with real image_picker + multipart POST ─────────────
-  // POST  YOUR_API/animal-weight
-  // Field : image (file)
-  // Response: { "weight_kg": 369.0, "animal_type": "Pig", "confidence": 0.92 }
-  // ───────────────────────────────────────────────────────────────────────────
   Future<void> estimateWeight(String path) async {
     _imagePath    = path;
     _status       = AnimalWeightStatus.loading;
@@ -85,7 +73,6 @@ class _AnimalWeightScreenState extends State<AnimalWeightScreen> {
   @override
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
-  // TODO: replace with real image_picker call
   void _pickImage() => _ctrl.estimateWeight('mock_path');
 
   @override
@@ -114,37 +101,29 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.xxxl),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Page heading
               _PageHeading(
                 title:    'Animal Weight Estimation',
                 subtitle: 'Upload an animal image to estimate weight using AI-powered computer vision',
               ),
-              const SizedBox(height: AppSpacing.xl),
-
-              // Image card
+              const SizedBox(height: 20),
               _ImageCard(
                 imagePath: ctrl.imagePath,
                 isLoading: ctrl.status == AnimalWeightStatus.loading,
                 onPick:    onPick,
               ),
-              const SizedBox(height: AppSpacing.xl),
-
-              // Result card
+              const SizedBox(height: 20),
               if (ctrl.status == AnimalWeightStatus.result &&
                   ctrl.result != null) ...[
                 _ResultCard(result: ctrl.result!),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: 20),
               ],
-
-              // Error banner
               if (ctrl.status == AnimalWeightStatus.error &&
                   ctrl.errorMessage != null)
                 _ErrorBanner(ctrl.errorMessage!),
@@ -173,7 +152,7 @@ class _PageHeading extends StatelessWidget {
                 fontWeight: FontWeight.w600, color: AppColors.textDark)),
         const SizedBox(height: 4),
         Text(subtitle,
-            style: tt.bodySmall?.copyWith(color: AppColors.textMuted)),
+            style: tt.bodySmall?.copyWith(color: AppColors.textSubtle)),
       ],
     );
   }
@@ -195,45 +174,46 @@ class _ImageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width:   double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color:        AppColors.surface,
-        borderRadius: AppRadius.radiusLg,
-        border:       Border.all(color: AppColors.border),
-        boxShadow:    AppShadows.sm,
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color:      Colors.black.withOpacity(0.04),
+            blurRadius: 6,
+            offset:     const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          // Eye icon chip
           Container(
             width: 56, height: 56,
             decoration: BoxDecoration(
-              color:        AppColors.primaryLight,
-              borderRadius: AppRadius.radiusMd,
+              color:        AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMid),
             ),
             child: const Icon(Icons.visibility_outlined,
                 color: AppColors.primary, size: 28),
           ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Image preview or placeholder
+          const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: AppRadius.radiusMd,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
             child: isLoading
                 ? _loadingBox()
                 : imagePath != null
-                    ? Image.asset(imagePath!,
-                        width: double.infinity, height: 190,
-                        fit:   BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _placeholder())
-                    : _placeholder(),
+                ? Image.asset(imagePath!,
+                width: double.infinity, height: 190,
+                fit:   BoxFit.cover,
+                errorBuilder: (_, __, ___) => _placeholder())
+                : _placeholder(),
           ),
-          const SizedBox(height: AppSpacing.xl),
-
-          // Choose Image + Estimate Weight
+          const SizedBox(height: 20),
           Row(children: [
             Expanded(child: _OutlineBtn(label: 'Choose Image', onTap: onPick)),
-            const SizedBox(width: AppSpacing.md),
+            const SizedBox(width: 12),
             Expanded(
               child: _SolidBtn(
                 label:   'Estimate Weight',
@@ -248,14 +228,18 @@ class _ImageCard extends StatelessWidget {
   }
 
   Widget _loadingBox() => Container(
-        width: double.infinity, height: 190, color: AppColors.surfaceAlt,
-        child: const Center(
-            child: CircularProgressIndicator(color: AppColors.primary)));
+    width: double.infinity, height: 190,
+    color: AppColors.background,
+    child: const Center(
+        child: CircularProgressIndicator(color: AppColors.primary)),
+  );
 
   Widget _placeholder() => Container(
-        width: double.infinity, height: 190, color: AppColors.surfaceAlt,
-        child: const Icon(Icons.pets_rounded,
-            color: AppColors.textDisabled, size: 52));
+    width: double.infinity, height: 190,
+    color: AppColors.background,
+    child: const Icon(Icons.pets_rounded,
+        color: AppColors.textDisabled, size: 52),
+  );
 }
 
 // ─── Result card ──────────────────────────────────────────────────────────────
@@ -270,12 +254,18 @@ class _ResultCard extends StatelessWidget {
 
     return Container(
       width:   double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color:        AppColors.surface,
-        borderRadius: AppRadius.radiusLg,
-        border:       Border.all(color: AppColors.border),
-        boxShadow:    AppShadows.sm,
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color:      Colors.black.withOpacity(0.04),
+            blurRadius: 6,
+            offset:     const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,17 +273,14 @@ class _ResultCard extends StatelessWidget {
           Text('Estimation Result',
               style: tt.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600, color: AppColors.textDark)),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Highlighted weight box
+          const SizedBox(height: 16),
           Container(
             width:   double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color:        AppColors.primaryLight,
-              borderRadius: AppRadius.radiusMd,
-              border:       Border.all(
-                  color: AppColors.primary.withOpacity(0.25)),
+              color:        AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+              border:       Border.all(color: AppColors.primary.withOpacity(0.25)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,16 +296,9 @@ class _ResultCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
-
-          // Animal Type
-          _InfoRow(
-            label: 'Animal Type',
-            value: result.animalType,
-          ),
-          const SizedBox(height: AppSpacing.md),
-
-          // Confidence Score
+          const SizedBox(height: 12),
+          _InfoRow(label: 'Animal Type', value: result.animalType),
+          const SizedBox(height: 12),
           _ConfidenceRow(confidence: result.confidence),
         ],
       ),
@@ -326,7 +306,7 @@ class _ResultCard extends StatelessWidget {
   }
 }
 
-// ─── Info row (plain bordered box) ───────────────────────────────────────────
+// ─── Info row ─────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
   final String label, value;
@@ -337,19 +317,18 @@ class _InfoRow extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Container(
       width:   double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color:        AppColors.surface,
-        borderRadius: AppRadius.radiusMd,
-        border:       Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+        border:       Border.all(color: AppColors.cardBorder),
       ),
       child: RichText(
         text: TextSpan(
           style: tt.bodyMedium?.copyWith(color: AppColors.textDark),
           children: [
             TextSpan(
-                text: '$label: ',
+                text:  '$label: ',
                 style: const TextStyle(fontWeight: FontWeight.w600)),
             TextSpan(text: value),
           ],
@@ -370,12 +349,11 @@ class _ConfidenceRow extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Container(
       width:   double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color:        AppColors.surface,
-        borderRadius: AppRadius.radiusMd,
-        border:       Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+        border:       Border.all(color: AppColors.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,21 +363,20 @@ class _ConfidenceRow extends StatelessWidget {
               style: tt.bodyMedium?.copyWith(color: AppColors.textDark),
               children: [
                 const TextSpan(
-                    text: 'Confidence Score: ',
+                    text:  'Confidence Score: ',
                     style: TextStyle(fontWeight: FontWeight.w600)),
-                TextSpan(
-                    text: '${(confidence * 100).toStringAsFixed(0)}%'),
+                TextSpan(text: '${(confidence * 100).toStringAsFixed(0)}%'),
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: 8),
           ClipRRect(
-            borderRadius: AppRadius.radiusFull,
+            borderRadius: BorderRadius.circular(50),
             child: LinearProgressIndicator(
               value:           confidence,
               minHeight:       8,
               backgroundColor: const Color(0xFFE5E7EB),
-              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+              valueColor:      const AlwaysStoppedAnimation(AppColors.primary),
             ),
           ),
         ],
@@ -411,7 +388,7 @@ class _ConfidenceRow extends StatelessWidget {
 // ─── Shared buttons ───────────────────────────────────────────────────────────
 
 class _OutlineBtn extends StatelessWidget {
-  final String label;
+  final String     label;
   final VoidCallback onTap;
   const _OutlineBtn({required this.label, required this.onTap});
 
@@ -423,8 +400,8 @@ class _OutlineBtn extends StatelessWidget {
         padding:         const EdgeInsets.symmetric(vertical: 14),
         side:            const BorderSide(color: AppColors.primary),
         shape:           RoundedRectangleBorder(
-            borderRadius: AppRadius.radiusFull),
-        backgroundColor: AppColors.primaryLight,
+            borderRadius: BorderRadius.circular(50)),
+        backgroundColor: AppColors.primarySurface,
       ),
       child: Text(label,
           style: const TextStyle(
@@ -434,9 +411,9 @@ class _OutlineBtn extends StatelessWidget {
 }
 
 class _SolidBtn extends StatelessWidget {
-  final String   label;
+  final String     label;
   final VoidCallback onTap;
-  final bool     enabled;
+  final bool       enabled;
   const _SolidBtn(
       {required this.label, required this.onTap, this.enabled = true});
 
@@ -445,12 +422,12 @@ class _SolidBtn extends StatelessWidget {
     return ElevatedButton(
       onPressed: enabled ? onTap : null,
       style: ElevatedButton.styleFrom(
-        padding:         const EdgeInsets.symmetric(vertical: 14),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        disabledBackgroundColor: AppColors.primaryMuted,
-        shape:           RoundedRectangleBorder(
-            borderRadius: AppRadius.radiusFull),
+        padding:                 const EdgeInsets.symmetric(vertical: 14),
+        backgroundColor:         AppColors.primary,
+        foregroundColor:         Colors.white,
+        disabledBackgroundColor: AppColors.primaryDark,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50)),
         elevation: 0,
       ),
       child: Text(label,
@@ -468,15 +445,15 @@ class _ErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color:        AppColors.errorLight,
-        borderRadius: AppRadius.radiusMd,
-        border:       Border.all(color: AppColors.errorBorder),
+        color:        const Color(0xFFFEF2F2),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+        border:       Border.all(color: AppColors.error.withOpacity(0.3)),
       ),
       child: Row(children: [
         const Icon(Icons.error_outline, size: 16, color: AppColors.error),
-        const SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(message,
               style: Theme.of(context)

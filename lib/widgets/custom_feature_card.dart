@@ -7,21 +7,6 @@ import '../theme/app_theme.dart';
 //
 // The card shown in the Welcome/Dashboard grid. Currently non-tappable
 // (displays only); set [onTap] to make it navigate.
-//
-// Usage — non-clickable (display only):
-//   FeatureCard(
-//     svgPath:     'assets/images/icons/plant_icon.svg',
-//     title:       'Plant Disease Detection',
-//     description: 'Detect plant diseases early using AI image analysis.',
-//   )
-//
-// Usage — clickable:
-//   FeatureCard(
-//     svgPath:     'assets/images/icons/animal_icon.svg',
-//     title:       'Animal Weight Estimation',
-//     description: 'Estimate weight accurately without physical scales.',
-//     onTap:       () => Navigator.push(context, ...),
-//   )
 // ─────────────────────────────────────────────────────────────────────────────
 
 class FeatureCard extends StatelessWidget {
@@ -46,24 +31,29 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
     final card = Container(
       decoration: BoxDecoration(
-        color:         cs.surface,
-        borderRadius:  AppRadius.radiusLg,
-        border:        Border.all(color: AppColors.border),
-        boxShadow:     AppShadows.sm,
+        color:        AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(AppSizes.cardPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: fixedHeight ? MainAxisSize.max : MainAxisSize.min,
         children: [
           // Icon chip
-          _IconChip(svgPath: svgPath, cs: cs),
-          const SizedBox(height: AppSpacing.lg),
+          _IconChip(svgPath: svgPath),
+          const SizedBox(height: AppSizes.itemPadding),
 
           // Title row
           Row(
@@ -71,21 +61,24 @@ class FeatureCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: AppTextStyles.cardTitle,
                 ),
               ),
               if (onTap != null) ...[
                 const SizedBox(width: 8),
-                Icon(Icons.arrow_forward_ios_rounded, size: 14, color: cs.primary),
+                const Icon(Icons.arrow_forward_ios_rounded, 
+                  size: 14, 
+                  color: AppColors.primary
+                ),
               ],
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: 6),
 
           // Description
           Text(
             description,
-            style: tt.bodySmall,
+            style: AppTextStyles.pageSubtitle.copyWith(fontSize: 13),
             maxLines: fixedHeight ? 2 : null,
             overflow: fixedHeight ? TextOverflow.ellipsis : null,
           ),
@@ -98,11 +91,11 @@ class FeatureCard extends StatelessWidget {
     // Tappable variant
     return Material(
       color:        Colors.transparent,
-      borderRadius: AppRadius.radiusLg,
+      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
       child: InkWell(
         onTap:        onTap,
-        borderRadius: AppRadius.radiusLg,
-        splashColor:  cs.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+        splashColor:  AppColors.primary.withValues(alpha: 0.08),
         child: card,
       ),
     );
@@ -113,20 +106,19 @@ class FeatureCard extends StatelessWidget {
 
 class _IconChip extends StatelessWidget {
   final String svgPath;
-  final ColorScheme cs;
 
-  const _IconChip({required this.svgPath, required this.cs});
+  const _IconChip({required this.svgPath});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 52, height: 52,
+      width: 48, height: 48,
       decoration: BoxDecoration(
-        color:         cs.primaryContainer,
-        borderRadius:  AppRadius.radiusMd,
+        color:         AppColors.primarySurface,
+        borderRadius:  BorderRadius.circular(AppSizes.radiusMid),
       ),
       child: Center(
-        child: SvgPicture.asset(svgPath, width: 26, height: 26),
+        child: SvgPicture.asset(svgPath, width: 24, height: 24),
       ),
     );
   }

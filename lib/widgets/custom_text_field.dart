@@ -2,29 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 
 /// Reusable styled text field used across login, register, and all feature forms.
-///
-/// Pixel-perfect match of the original `_buildTextField` / `_buildPasswordField`
-/// helpers in login_screen.dart and register_screen.dart. Zero visual changes.
-///
-/// Usage (plain):
-/// ```dart
-/// CustomTextField(
-///   controller: _emailController,
-///   hint: AppStrings.hintEmail,
-///   keyboardType: TextInputType.emailAddress,
-/// )
-/// ```
-///
-/// Usage (password):
-/// ```dart
-/// CustomTextField(
-///   controller: _passwordController,
-///   hint: AppStrings.hintPassword,
-///   isPassword: true,
-///   obscureText: _obscure,
-///   onToggleObscure: () => setState(() => _obscure = !_obscure),
-/// )
-/// ```
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
@@ -52,11 +29,10 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Original decoration matching the professional design tokens
       decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.cardBorder),
       ),
       child: TextField(
         controller: controller,
@@ -67,10 +43,9 @@ class CustomTextField extends StatelessWidget {
           hintText: hint,
           hintStyle: TextStyle(
             fontSize: 16,
-            color: AppColors.textMuted.withOpacity(0.6),
+            color: AppColors.textSubtle.withValues(alpha: 0.6),
           ),
           border: InputBorder.none,
-          // Original content padding: horizontal 17, vertical 15
           contentPadding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
           suffixIcon: isPassword
               ? GestureDetector(
@@ -79,7 +54,7 @@ class CustomTextField extends StatelessWidget {
                     obscureText
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: AppColors.textMuted,
+                    color: AppColors.textSubtle,
                     size: 20,
                   ),
                 )

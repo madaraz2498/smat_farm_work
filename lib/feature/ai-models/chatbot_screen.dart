@@ -6,20 +6,18 @@ import '../../widgets/custom_app_bar.dart';
 // SMART FARM CHATBOT SCREEN  — fully theme-driven
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Controller ───────────────────────────────────────────────────────────────
-
 enum ChatStatus { idle, loading, error }
 
 class ChatMessage {
-  final String text;
-  final bool isUser, isError;
+  final String   text;
+  final bool     isUser, isError;
   final DateTime time;
   ChatMessage({required this.text, required this.isUser, this.isError = false})
       : time = DateTime.now();
 }
 
 class ChatbotController extends ChangeNotifier {
-  final List<ChatMessage> messages = [];
+  final List<ChatMessage> messages   = [];
   final messageCtrl = TextEditingController();
   ChatStatus _status   = ChatStatus.idle;
   String     _language = 'English';
@@ -29,9 +27,6 @@ class ChatbotController extends ChangeNotifier {
 
   void setLanguage(String l) { _language = l; notifyListeners(); }
 
-  /// TODO: POST to YOUR_API/chatbot
-  /// Body: { message: String, language: String }
-  /// Response: { reply: String }
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
     messages.add(ChatMessage(text: text.trim(), isUser: true));
@@ -114,28 +109,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           AnimatedBuilder(
             animation: _ctrl,
             builder: (_, __) => Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              padding: const EdgeInsets.only(right: 8),
               child: GestureDetector(
                 onTap: () => _ctrl.setLanguage(
                     _ctrl.language == 'English' ? 'Arabic' : 'English'),
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 12),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm + 2, vertical: AppSpacing.xs),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: AppRadius.radiusFull,
+                    color:        Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(50),
                     border: Border.all(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                     ),
                   ),
                   child: Text(
                     _ctrl.language == 'English' ? 'EN' : 'AR',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                        color:      Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -148,42 +139,37 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             builder: (_, __) => _ctrl.messages.isEmpty
                 ? const SizedBox.shrink()
                 : IconButton(
-                    onPressed: _ctrl.clearChat,
-                    icon: const Icon(Icons.delete_outline_rounded,
-                        size: 20, color: AppColors.textMuted),
-                  ),
+              onPressed: _ctrl.clearChat,
+              icon: const Icon(Icons.delete_outline_rounded,
+                  size: 20, color: AppColors.textSubtle),
+            ),
           ),
         ],
       ),
       body: AnimatedBuilder(
         animation: _ctrl,
         builder: (context, _) => Column(children: [
-          // ── Quick suggestions (when empty) ──────────────────────────
           if (_ctrl.messages.isEmpty)
             _SuggestionsBar(onTap: (s) {
               _ctrl.messageCtrl.text = s;
               _send();
             }),
-
-          // ── Message list ─────────────────────────────────────────────
           Expanded(
             child: _ctrl.messages.isEmpty
                 ? _EmptyState()
                 : ListView.builder(
-                    controller: _scroll,
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    itemCount: _ctrl.messages.length +
-                        (_ctrl.status == ChatStatus.loading ? 1 : 0),
-                    itemBuilder: (_, i) {
-                      if (i == _ctrl.messages.length) {
-                        return const _TypingIndicator();
-                      }
-                      return _Bubble(msg: _ctrl.messages[i]);
-                    },
-                  ),
+              controller: _scroll,
+              padding: const EdgeInsets.all(16),
+              itemCount: _ctrl.messages.length +
+                  (_ctrl.status == ChatStatus.loading ? 1 : 0),
+              itemBuilder: (_, i) {
+                if (i == _ctrl.messages.length) {
+                  return const _TypingIndicator();
+                }
+                return _Bubble(msg: _ctrl.messages[i]);
+              },
+            ),
           ),
-
-          // ── Input bar ────────────────────────────────────────────────
           _InputBar(ctrl: _ctrl, onSend: _send),
         ]),
       ),
@@ -198,20 +184,22 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-    return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(
-        width: 72, height: 72,
-        decoration: BoxDecoration(
-            color: cs.primaryContainer, borderRadius: AppRadius.radiusXl),
-        child: Icon(Icons.chat_bubble_outline_rounded,
-            size: 36, color: cs.primary),
-      ),
-      const SizedBox(height: AppSpacing.lg),
-      Text('Ask me anything about farming!', style: tt.titleSmall),
-      const SizedBox(height: AppSpacing.xs),
-      Text('Crop care, diseases, irrigation, pests...',
-          style: tt.bodySmall),
-    ]));
+    return Center(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(
+          width: 72, height: 72,
+          decoration: BoxDecoration(
+            color:        cs.primaryContainer,
+            borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+          ),
+          child: Icon(Icons.chat_bubble_outline_rounded, size: 36, color: cs.primary),
+        ),
+        const SizedBox(height: 16),
+        Text('Ask me anything about farming!', style: tt.titleSmall),
+        const SizedBox(height: 4),
+        Text('Crop care, diseases, irrigation, pests...', style: tt.bodySmall),
+      ]),
+    );
   }
 }
 
@@ -232,26 +220,24 @@ class _SuggestionsBar extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Container(
       color: cs.surface,
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Quick questions:', style: tt.caption),
-        const SizedBox(height: AppSpacing.sm),
+        Text('Quick questions:', style: tt.bodySmall),
+        const SizedBox(height: 8),
         SizedBox(
           height: 34,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _suggestions.length,
-            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (_, i) => GestureDetector(
               onTap: () => onTap(_suggestions[i]),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color:        cs.primaryContainer,
-                  borderRadius: AppRadius.radiusFull,
-                  border: Border.all(color: cs.primary.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(50),
+                  border:       Border.all(color: cs.primary.withOpacity(0.3)),
                 ),
                 child: Text(_suggestions[i],
                     style: tt.labelSmall?.copyWith(
@@ -277,41 +263,53 @@ class _Bubble extends StatelessWidget {
         '${msg.time.minute.toString().padLeft(2, '0')}';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment:
-            msg.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        msg.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!msg.isUser) _Avatar(isUser: false, cs: cs),
-          const SizedBox(width: AppSpacing.sm),
-          Flexible(child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg, vertical: AppSpacing.sm + 2),
-            decoration: BoxDecoration(
-              color: msg.isUser ? cs.primary : cs.surface,
-              borderRadius: BorderRadius.only(
-                topLeft:     const Radius.circular(AppRadius.lg),
-                topRight:    const Radius.circular(AppRadius.lg),
-                bottomLeft:  Radius.circular(msg.isUser ? AppRadius.lg : 4),
-                bottomRight: Radius.circular(msg.isUser ? 4 : AppRadius.lg),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: msg.isUser ? cs.primary : cs.surface,
+                borderRadius: BorderRadius.only(
+                  topLeft:     const Radius.circular(AppSizes.radiusLarge),
+                  topRight:    const Radius.circular(AppSizes.radiusLarge),
+                  bottomLeft:  Radius.circular(msg.isUser ? AppSizes.radiusLarge : 4),
+                  bottomRight: Radius.circular(msg.isUser ? 4 : AppSizes.radiusLarge),
+                ),
+                border: msg.isUser
+                    ? null
+                    : Border.all(color: AppColors.cardBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color:      Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    offset:     const Offset(0, 2),
+                  ),
+                ],
               ),
-              border: msg.isUser ? null : Border.all(color: AppColors.border),
-              boxShadow: AppShadows.sm,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(msg.text,
+                    style: tt.bodyMedium?.copyWith(
+                        color: msg.isUser
+                            ? Colors.white
+                            : (msg.isError ? AppColors.error : AppColors.textMid),
+                        height: 1.5)),
+                const SizedBox(height: 4),
+                Text(ts,
+                    style: tt.bodySmall?.copyWith(
+                        color: msg.isUser
+                            ? Colors.white.withOpacity(0.65)
+                            : AppColors.textSubtle)),
+              ]),
             ),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(msg.text, style: tt.bodyMedium?.copyWith(
-                  color: msg.isUser
-                      ? Colors.white
-                      : (msg.isError ? AppColors.error : AppColors.textBody),
-                  height: 1.5)),
-              const SizedBox(height: AppSpacing.xs),
-              Text(ts, style: tt.caption?.copyWith(
-                  color: msg.isUser
-                      ? Colors.white.withOpacity(0.65) : AppColors.textMuted)),
-            ]),
-          )),
-          const SizedBox(width: AppSpacing.sm),
+          ),
+          const SizedBox(width: 8),
           if (msg.isUser) _Avatar(isUser: true, cs: cs),
         ],
       ),
@@ -320,7 +318,8 @@ class _Bubble extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  final bool isUser; final ColorScheme cs;
+  final bool isUser;
+  final ColorScheme cs;
   const _Avatar({required this.isUser, required this.cs});
 
   @override
@@ -339,32 +338,32 @@ class _Avatar extends StatelessWidget {
 
 class _TypingIndicator extends StatelessWidget {
   const _TypingIndicator();
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
         _Avatar(isUser: false, cs: cs),
-        const SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: cs.surface,
+            color:        cs.surface,
             borderRadius: const BorderRadius.only(
-              topLeft:     Radius.circular(AppRadius.lg),
-              topRight:    Radius.circular(AppRadius.lg),
+              topLeft:     Radius.circular(AppSizes.radiusLarge),
+              topRight:    Radius.circular(AppSizes.radiusLarge),
               bottomLeft:  Radius.circular(4),
-              bottomRight: Radius.circular(AppRadius.lg),
+              bottomRight: Radius.circular(AppSizes.radiusLarge),
             ),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.cardBorder),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            _Dot(delay: 0, cs: cs),
-            const SizedBox(width: AppSpacing.xs),
+            _Dot(delay: 0,   cs: cs),
+            const SizedBox(width: 4),
             _Dot(delay: 200, cs: cs),
-            const SizedBox(width: AppSpacing.xs),
+            const SizedBox(width: 4),
             _Dot(delay: 400, cs: cs),
           ]),
         ),
@@ -374,8 +373,10 @@ class _TypingIndicator extends StatelessWidget {
 }
 
 class _Dot extends StatefulWidget {
-  final int delay; final ColorScheme cs;
+  final int delay;
+  final ColorScheme cs;
   const _Dot({required this.delay, required this.cs});
+
   @override
   State<_Dot> createState() => _DotState();
 }
@@ -404,53 +405,56 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
     opacity: _anim,
     child: Container(
       width: 7, height: 7,
-      decoration: BoxDecoration(
-          color: widget.cs.primary, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: widget.cs.primary, shape: BoxShape.circle),
     ),
   );
 }
 
 class _InputBar extends StatelessWidget {
   final ChatbotController ctrl;
-  final VoidCallback onSend;
+  final VoidCallback       onSend;
   const _InputBar({required this.ctrl, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.xxl),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       decoration: BoxDecoration(
-        color: cs.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
-        boxShadow: AppShadows.md,
+        color:  cs.surface,
+        border: Border(top: BorderSide(color: AppColors.cardBorder)),
+        boxShadow: [
+          BoxShadow(
+            color:      Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset:     const Offset(0, -2),
+          ),
+        ],
       ),
       child: Row(children: [
-        // ── Text input ───────────────────────────────────────────────
-        Expanded(child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: AppRadius.radiusFull,
-            border: Border.all(color: AppColors.border),
-          ),
-          child: TextField(
-            controller: ctrl.messageCtrl,
-            minLines: 1, maxLines: 4,
-            textInputAction: TextInputAction.send,
-            onSubmitted: (_) => onSend(),
-            style: Theme.of(context).textTheme.bodyMedium,
-            decoration: const InputDecoration(
-              hintText: 'Ask about crops, diseases, irrigation...',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color:        AppColors.background,
+              borderRadius: BorderRadius.circular(50),
+              border:       Border.all(color: AppColors.cardBorder),
+            ),
+            child: TextField(
+              controller:      ctrl.messageCtrl,
+              minLines:        1,
+              maxLines:        4,
+              textInputAction: TextInputAction.send,
+              onSubmitted:     (_) => onSend(),
+              style:           Theme.of(context).textTheme.bodyMedium,
+              decoration: const InputDecoration(
+                hintText: 'Ask about crops, diseases, irrigation...',
+                border:   InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
             ),
           ),
-        )),
-        const SizedBox(width: AppSpacing.sm),
-
-        // ── Send button ──────────────────────────────────────────────
+        ),
+        const SizedBox(width: 8),
         GestureDetector(
           onTap: ctrl.status == ChatStatus.loading ? null : onSend,
           child: AnimatedContainer(
@@ -458,14 +462,22 @@ class _InputBar extends StatelessWidget {
             width: 46, height: 46,
             decoration: BoxDecoration(
               color: ctrl.status == ChatStatus.loading
-                  ? cs.primary.withOpacity(0.50) : cs.primary,
-              shape: BoxShape.circle,
-              boxShadow: AppShadows.primaryGlow,
+                  ? cs.primary.withOpacity(0.50)
+                  : cs.primary,
+              shape:     BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color:      cs.primary.withOpacity(0.35),
+                  blurRadius: 8,
+                  offset:     const Offset(0, 3),
+                ),
+              ],
             ),
             child: ctrl.status == ChatStatus.loading
-                ? const Padding(padding: EdgeInsets.all(13),
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white))
+                ? const Padding(
+                padding: EdgeInsets.all(13),
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white))
                 : const Icon(Icons.send_rounded, color: Colors.white, size: 20),
           ),
         ),

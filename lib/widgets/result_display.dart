@@ -2,15 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 
 /// Reusable AI result card shown after any model analysis completes.
-///
-/// Displays:
-/// - A status badge (e.g. "Healthy" / "Diseased")
-/// - A label (e.g. "Confidence")
-/// - A linear progress bar representing the confidence value (0.0 – 1.0)
-/// - An optional detail string beneath the bar
-///
-/// This widget has NO Scaffold / AppBar of its own — it is a pure body widget
-/// intended to be embedded inside any page's content area.
 class ResultDisplay extends StatelessWidget {
   const ResultDisplay({
     super.key,
@@ -48,8 +39,14 @@ class ResultDisplay extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: AppShadows.sm, // Using unified shadow tokens
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +55,7 @@ class ResultDisplay extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: badgeColor.withOpacity(0.12),
+              color: badgeColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -80,7 +77,7 @@ class ResultDisplay extends StatelessWidget {
                 confidenceLabel,
                 style: const TextStyle(
                   fontSize: 14,
-                  color: AppColors.textMuted,
+                  color: AppColors.textSubtle,
                 ),
               ),
               Text(
@@ -101,7 +98,7 @@ class ResultDisplay extends StatelessWidget {
             child: LinearProgressIndicator(
               value: confidence.clamp(0.0, 1.0),
               minHeight: 8,
-              backgroundColor: AppColors.border,
+              backgroundColor: AppColors.cardBorder,
               valueColor: AlwaysStoppedAnimation<Color>(badgeColor),
             ),
           ),
@@ -113,7 +110,7 @@ class ResultDisplay extends StatelessWidget {
               detail!,
               style: const TextStyle(
                 fontSize: 13,
-                color: AppColors.textMuted,
+                color: AppColors.textSubtle,
               ),
             ),
           ],

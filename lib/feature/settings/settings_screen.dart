@@ -4,16 +4,6 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/custom_app_bar.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SETTINGS SCREEN
-// Layout (matches screenshot top → bottom):
-//   ⚙ Settings heading + subtitle
-//   Card: Profile Settings — Full Name / Email / Phone Number / Save Profile btn
-//   Card: Theme Preference — Light Mode (radio) / Dark Mode (radio)
-//   Card: Language Selection — dropdown (English / Arabic / French)
-//   Card: Notification Preferences — Push Notifications / Email Alerts (checkboxes)
-// ═══════════════════════════════════════════════════════════════════════════════
-
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
   @override
@@ -21,21 +11,16 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Profile
   final _nameCtrl  = TextEditingController(text: 'Farm Owner');
   final _emailCtrl = TextEditingController(text: 'owner@smartfarm.com');
   final _phoneCtrl = TextEditingController(text: '+1234567890');
 
-  // Theme
   String _themeMode = 'Light Mode';
+  String _language  = 'English';
+  bool   _pushNotif   = true;
+  bool   _emailAlerts = true;
 
-  // Language
-  String _language = 'English';
   static const _languages = ['English', 'Arabic', 'French'];
-
-  // Notifications
-  bool _pushNotif   = true;
-  bool _emailAlerts = true;
 
   @override
   void dispose() {
@@ -52,13 +37,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FeatureAppBar(
+
         title:    'Settings',
         svgPath:  'assets/images/icons/crop_icon.svg',
-        showBack: false,
+        showBack: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.xxxl),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
@@ -70,13 +55,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     width: 32, height: 32,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: AppRadius.radiusSm,
+                      color:        AppColors.primarySurface,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                     ),
                     child: const Icon(Icons.settings_outlined,
                         color: AppColors.primary, size: 18),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
+                  const SizedBox(width: 8),
                   Text('Settings',
                       style: tt.titleLarge?.copyWith(
                           fontWeight: FontWeight.w600,
@@ -84,37 +69,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ]),
                 const SizedBox(height: 4),
                 Text('Manage your account and application preferences',
-                    style: tt.bodySmall?.copyWith(
-                        color: AppColors.textMuted)),
-                const SizedBox(height: AppSpacing.xl),
+                    style: tt.bodySmall?.copyWith(color: AppColors.textSubtle)),
+                const SizedBox(height: 20),
 
                 // ── Profile Settings card ─────────────────────────────────
                 _SectionCard(children: [
-                  _SectionHeader(
+                  const _SectionHeader(
                       icon: Icons.person_outline_rounded,
                       title: 'Profile Settings'),
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: 20),
 
-                  _FieldLabel('Full Name'),
-                  const SizedBox(height: AppSpacing.sm),
+                  const _FieldLabel('Full Name'),
+                  const SizedBox(height: 8),
                   _InputField(controller: _nameCtrl, hint: 'Full Name'),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 16),
 
-                  _FieldLabel('Email'),
-                  const SizedBox(height: AppSpacing.sm),
+                  const _FieldLabel('Email'),
+                  const SizedBox(height: 8),
                   _InputField(
                       controller: _emailCtrl,
                       hint: 'Email',
                       type: TextInputType.emailAddress),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 16),
 
-                  _FieldLabel('Phone Number'),
-                  const SizedBox(height: AppSpacing.sm),
+                  const _FieldLabel('Phone Number'),
+                  const SizedBox(height: 8),
                   _InputField(
                       controller: _phoneCtrl,
                       hint: 'Phone Number',
                       type: TextInputType.phone),
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: 20),
 
                   SizedBox(
                     width: double.infinity,
@@ -124,8 +108,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         padding:         const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        shape:           RoundedRectangleBorder(
-                            borderRadius: AppRadius.radiusFull),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50)),
                         elevation: 0,
                       ),
                       child: const Text('Save Profile',
@@ -134,13 +118,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ]),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: 16),
 
                 // ── Theme Preference card ─────────────────────────────────
                 _SectionCard(children: [
-                  _SectionHeader(
-                      icon: Icons.palette_outlined, title: 'Theme Preference'),
-                  const SizedBox(height: AppSpacing.md),
+                  const _SectionHeader(
+                      icon: Icons.palette_outlined,
+                      title: 'Theme Preference'),
+                  const SizedBox(height: 12),
 
                   _RadioRow(
                     label:    'Light Mode',
@@ -148,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     groupVal: _themeMode,
                     onChanged: (v) => setState(() => _themeMode = v!),
                   ),
-                  Divider(height: 1, color: AppColors.border),
+                  Divider(height: 1, color: AppColors.cardBorder),
                   _RadioRow(
                     label:    'Dark Mode',
                     value:    'Dark Mode',
@@ -157,64 +142,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     filledDot: true,
                   ),
                 ]),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: 16),
 
                 // ── Language Selection card ───────────────────────────────
                 _SectionCard(children: [
-                  _SectionHeader(
+                  const _SectionHeader(
                       icon: Icons.language_rounded,
                       title: 'Language Selection'),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: 12),
 
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceAlt,
-                      borderRadius: AppRadius.radiusMd,
-                      border:       Border.all(color: AppColors.border),
+                      color:        AppColors.background,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+                      border:       Border.all(color: AppColors.cardBorder),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value:      _language,
                         isExpanded: true,
                         icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                            color: AppColors.textMuted),
+                            color: AppColors.textSubtle),
                         style: const TextStyle(
                             fontSize: 14, color: AppColors.textDark),
                         dropdownColor: AppColors.surface,
                         borderRadius:  BorderRadius.circular(12),
                         items: _languages
-                            .map((l) =>
-                            DropdownMenuItem(value: l, child: Text(l)))
+                            .map((l) => DropdownMenuItem(value: l, child: Text(l)))
                             .toList(),
                         onChanged: (v) => setState(() => _language = v!),
                       ),
                     ),
                   ),
                 ]),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: 16),
 
                 // ── Notification Preferences card ─────────────────────────
                 _SectionCard(children: [
-                  _SectionHeader(
+                  const _SectionHeader(
                       icon: Icons.notifications_outlined,
                       title: 'Notification Preferences'),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: 12),
 
                   _CheckboxRow(
                     label:    'Push Notifications',
                     value:    _pushNotif,
                     onChanged: (v) => setState(() => _pushNotif = v ?? true),
                   ),
-                  Divider(height: 1, color: AppColors.border),
+                  Divider(height: 1, color: AppColors.cardBorder),
                   _CheckboxRow(
                     label:    'Email Alerts',
                     value:    _emailAlerts,
                     onChanged: (v) => setState(() => _emailAlerts = v ?? true),
                   ),
                 ]),
-                const SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: 24),
 
                 // ── Sign out button ───────────────────────────────────────
                 SizedBox(
@@ -230,10 +213,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: AppColors.error)),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: AppColors.error),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: AppRadius.radiusMd),
-                      backgroundColor: AppColors.errorLight,
+                      side:    const BorderSide(color: AppColors.error),
+                      shape:   RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMid)),
+                      backgroundColor: const Color(0xFFFEF2F2),
                     ),
                   ),
                 ),
@@ -248,9 +231,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showSaved(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Profile saved'),
+        content:     Text('Profile saved'),
         backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
+        behavior:    SnackBarBehavior.floating,
       ),
     );
   }
@@ -260,8 +243,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Sign Out',
             style: TextStyle(
                 fontSize: 17,
@@ -270,22 +252,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: const Text(
           'Are you sure you want to sign out?',
           style: TextStyle(
-              fontSize: 14, color: AppColors.textMuted, height: 1.5),
+              fontSize: 14, color: AppColors.textSubtle, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel',
-                style: TextStyle(color: AppColors.textMuted)),
+                style: TextStyle(color: AppColors.textSubtle)),
           ),
           ElevatedButton(
             onPressed: () {
-              // 1. Close the confirmation dialog
               Navigator.pop(context);
-              // 2. Pop all pushed screens back to the AuthWrapper root so
-              //    it can render LoginScreen cleanly.
               Navigator.of(context).popUntil((route) => route.isFirst);
-              // 3. Clear auth state — AuthWrapper rebuilds to LoginScreen.
               context.read<AuthProvider>().logout();
             },
             style: ElevatedButton.styleFrom(
@@ -313,12 +291,18 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width:   double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.radiusLg,
-        border:       Border.all(color: AppColors.border),
-        boxShadow:    AppShadows.sm,
+        color:        AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color:      Colors.black.withOpacity(0.04),
+            blurRadius: 6,
+            offset:     const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +311,7 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-// ─── Section header (icon + title) ───────────────────────────────────────────
+// ─── Section header ───────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   final IconData icon;
@@ -341,12 +325,12 @@ class _SectionHeader extends StatelessWidget {
       Container(
         width: 36, height: 36,
         decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          borderRadius: AppRadius.radiusMd,
+          color:        AppColors.primarySurface,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMid),
         ),
         child: Icon(icon, color: AppColors.primary, size: 18),
       ),
-      const SizedBox(width: AppSpacing.md),
+      const SizedBox(width: 12),
       Text(title,
           style: tt.titleSmall?.copyWith(
               fontWeight: FontWeight.w600, color: AppColors.textDark)),
@@ -388,23 +372,20 @@ class _InputField extends StatelessWidget {
       keyboardType: type,
       style: const TextStyle(fontSize: 14, color: AppColors.textDark),
       decoration: InputDecoration(
-        hintText:   hint,
-        hintStyle:  const TextStyle(
-            fontSize: 14, color: AppColors.textDisabled),
-        filled:     true,
-        fillColor:  AppColors.surfaceAlt,
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: 14),
+        hintText:  hint,
+        hintStyle: const TextStyle(fontSize: 14, color: AppColors.textDisabled),
+        filled:    true,
+        fillColor: AppColors.background,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(color: AppColors.border)),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+            borderSide:   const BorderSide(color: AppColors.cardBorder)),
         enabledBorder: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(color: AppColors.border)),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+            borderSide:   const BorderSide(color: AppColors.cardBorder)),
         focusedBorder: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(
-                color: AppColors.primary, width: 1.5)),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+            borderSide:   const BorderSide(color: AppColors.primary, width: 1.5)),
       ),
     );
   }
@@ -429,7 +410,7 @@ class _RadioRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt        = Theme.of(context).textTheme;
+    final tt         = Theme.of(context).textTheme;
     final isSelected = value == groupVal;
 
     return InkWell(
@@ -437,15 +418,12 @@ class _RadioRow extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(children: [
-          // Custom radio visual to match screenshot (filled circle)
           Container(
             width: 20, height: 20,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : AppColors.textMuted,
+              color:  isSelected ? AppColors.primary : AppColors.textSubtle,
               shape:  BoxShape.circle,
-              border: Border.all(
-                width: 2,
-              ),
+              border: Border.all(width: 2),
             ),
             child: isSelected
                 ? Center(
@@ -453,15 +431,13 @@ class _RadioRow extends StatelessWidget {
                 width: 10, height: 10,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: filledDot
-                      ? AppColors.textDark
-                      : AppColors.primary,
+                  color: filledDot ? AppColors.textDark : AppColors.primary,
                 ),
               ),
             )
                 : null,
           ),
-          const SizedBox(width: AppSpacing.md),
+          const SizedBox(width: 12),
           Text(label,
               style: tt.bodyMedium?.copyWith(color: AppColors.textDark)),
         ]),
@@ -494,10 +470,10 @@ class _CheckboxRow extends StatelessWidget {
               style: tt.bodyMedium?.copyWith(color: AppColors.textDark)),
         ),
         Checkbox(
-          value:           value,
-          onChanged:       onChanged,
-          activeColor:     AppColors.primary,
-          shape:           RoundedRectangleBorder(
+          value:       value,
+          onChanged:   onChanged,
+          activeColor: AppColors.primary,
+          shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4)),
           side: const BorderSide(color: AppColors.primary, width: 1.5),
         ),

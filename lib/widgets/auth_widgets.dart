@@ -24,7 +24,7 @@ class AppLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -47,10 +47,10 @@ class AuthCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -120,7 +120,7 @@ class SmartTextField extends StatelessWidget {
             border: Border.all(
               color: errorText != null
                   ? AppColors.error
-                  : AppColors.border,
+                  : AppColors.cardBorder,
               width: errorText != null ? 1.5 : 1,
             ),
           ),
@@ -194,7 +194,7 @@ class RoleDropdown extends StatelessWidget {
             color: const Color(0xFFF9FAFB),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: errorText != null ? AppColors.error : AppColors.border,
+              color: errorText != null ? AppColors.error : AppColors.cardBorder,
               width: errorText != null ? 1.5 : 1,
             ),
           ),
@@ -208,7 +208,7 @@ class RoleDropdown extends StatelessWidget {
               ),
               isExpanded: true,
               icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.textMuted),
+                  color: AppColors.textSubtle),
               style: const TextStyle(fontSize: 15, color: AppColors.textDark),
               borderRadius: BorderRadius.circular(12),
               items: items
@@ -256,7 +256,7 @@ class PrimaryButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.7),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.7),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

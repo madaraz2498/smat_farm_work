@@ -6,12 +6,6 @@ import '../models/feature_model.dart';
 import '../models/nav_item_model.dart';
 import '../widgets/feature_card.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Data — defined once, typed, no raw Maps or inline literals in the UI
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// All sidebar / bottom-nav destinations. Defined here so they stay collocated
-/// with the screen that owns them; move to a dedicated data file if reused.
 final List<NavItemModel> appNavItems = const [
   NavItemModel(icon: Icons.home_outlined,            label: AppStrings.navWelcome),
   NavItemModel(icon: Icons.local_florist_outlined,   label: AppStrings.navPlantDisease),
@@ -24,7 +18,6 @@ final List<NavItemModel> appNavItems = const [
   NavItemModel(icon: Icons.settings_outlined,        label: AppStrings.navSettings),
 ];
 
-/// All dashboard feature cards.
 final List<FeatureModel> dashboardFeatures = const [
   FeatureModel(
     icon: Icons.local_florist_outlined,
@@ -58,12 +51,6 @@ final List<FeatureModel> dashboardFeatures = const [
   ),
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shell — owns the Scaffold, NavBar, Sidebar, BottomNav
-// Sub-pages are injected as body children with no Scaffold of their own.
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Top-level shell for the authenticated app experience.
 class SmartFarmDashboard extends StatefulWidget {
   const SmartFarmDashboard({super.key});
 
@@ -112,10 +99,6 @@ class _SmartFarmDashboardState extends State<SmartFarmDashboard> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Top Navigation Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _AppNavBar extends StatelessWidget {
   const _AppNavBar({required this.userName, required this.userRole});
 
@@ -126,22 +109,18 @@ class _AppNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      color: AppColors.surface,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.border,
-            width: 1.33,
-          ),
+          bottom: BorderSide(color: AppColors.cardBorder, width: 1.33),
         ),
         boxShadow: [
-          BoxShadow(color: AppColors.border, blurRadius: 3, offset: Offset(0, 1)),
+          BoxShadow(color: AppColors.cardBorder, blurRadius: 3, offset: Offset(0, 1)),
         ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Row(
         children: [
-          // Logo + App Name
           Row(
             children: [
               Container(
@@ -150,8 +129,8 @@ class _AppNavBar extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(color: AppColors.border, blurRadius: 6, offset: Offset(0, 4)),
+                  boxShadow: [
+                    BoxShadow(color: AppColors.cardBorder, blurRadius: 6, offset: Offset(0, 4)),
                   ],
                 ),
                 child: const Icon(Icons.eco, color: AppColors.surface, size: 24),
@@ -163,8 +142,6 @@ class _AppNavBar extends StatelessWidget {
               ),
             ],
           ),
-
-          // Centre page title
           const Expanded(
             child: Center(
               child: Text(
@@ -173,11 +150,8 @@ class _AppNavBar extends StatelessWidget {
               ),
             ),
           ),
-
-          // Right actions
           Row(
             children: [
-              // Notification bell with red dot
               Stack(
                 children: [
                   Container(
@@ -191,21 +165,20 @@ class _AppNavBar extends StatelessWidget {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(color: AppColors.notifRed, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: AppColors.notifRed,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(width: 4),
-
-              // Theme toggle
               Container(
                 padding: const EdgeInsets.all(8),
                 child: const Icon(Icons.wb_sunny_outlined, size: 20, color: AppColors.textDark),
               ),
               const SizedBox(width: 4),
-
-              // User chip
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
@@ -214,7 +187,10 @@ class _AppNavBar extends StatelessWidget {
                     Container(
                       width: 32,
                       height: 32,
-                      decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
                       child: const Icon(Icons.person, color: AppColors.surface, size: 16),
                     ),
                     const SizedBox(width: 12),
@@ -222,8 +198,10 @@ class _AppNavBar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(userName, style: const TextStyle(fontSize: 14, color: AppColors.textDark)),
-                        Text(userRole, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                        Text(userName,
+                            style: const TextStyle(fontSize: 14, color: AppColors.textDark)),
+                        Text(userRole,
+                            style: const TextStyle(fontSize: 12, color: AppColors.textSubtle)),
                       ],
                     ),
                   ],
@@ -236,10 +214,6 @@ class _AppNavBar extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Left Sidebar
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _AppSidebar extends StatelessWidget {
   const _AppSidebar({
@@ -256,9 +230,11 @@ class _AppSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 256,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(right: BorderSide(color: AppColors.border, width: 1.33)),
+        border: Border(
+          right: BorderSide(color: AppColors.cardBorder, width: 1.33),
+        ),
       ),
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -276,7 +252,7 @@ class _AppSidebar extends StatelessWidget {
                   color: isSelected ? AppColors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: isSelected
-                      ? const [BoxShadow(color: AppColors.border, blurRadius: 3, offset: Offset(0, 1))]
+                      ? [BoxShadow(color: AppColors.cardBorder, blurRadius: 3, offset: Offset(0, 1))]
                       : null,
                 ),
                 child: Row(
@@ -309,10 +285,6 @@ class _AppSidebar extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar (mobile)
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _AppBottomNav extends StatelessWidget {
   const _AppBottomNav({required this.selectedIndex, required this.onTap});
 
@@ -335,10 +307,6 @@ class _AppBottomNav extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Body Content
-// ─────────────────────────────────────────────────────────────────────────────
-
 class WelcomeBody extends StatelessWidget {
   const WelcomeBody({super.key});
 
@@ -349,14 +317,14 @@ class WelcomeBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text (
+          const Text(
             AppStrings.welcomePageTitle,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
           const SizedBox(height: 8),
           const Text(
             AppStrings.welcomeSubtitle,
-            style: TextStyle(fontSize: 16, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 16, color: AppColors.textSubtle),
           ),
           const SizedBox(height: 32),
           GridView.builder(
@@ -386,7 +354,7 @@ class _PlaceholderBody extends StatelessWidget {
     return Center(
       child: Text(
         'Content for $title coming soon...',
-        style: const TextStyle(fontSize: 18, color: AppColors.textMuted),
+        style: const TextStyle(fontSize: 18, color: AppColors.textSubtle),
       ),
     );
   }

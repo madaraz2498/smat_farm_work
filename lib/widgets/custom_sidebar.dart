@@ -43,18 +43,18 @@ class AppSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NavigationProvider>(
       builder: (_, nav, __) => Container(
-        width: 256,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+        width: AppSizes.sidebarWidth + 36, // Adjusting for original 256px
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
           border: Border(
-            right: BorderSide(color: AppColors.border, width: 1.33),
+            right: BorderSide(color: AppColors.cardBorder, width: 1.33),
           ),
         ),
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.all(16),
           children: List.generate(navItems.length, (i) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              padding: const EdgeInsets.only(bottom: 4),
               child: SidebarTile(
                 item:       navItems[i],
                 isSelected: nav.selectedIndex == i,
@@ -92,22 +92,21 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.read<AuthProvider>().currentUser;
     final cs   = Theme.of(context).colorScheme;
-    final tt   = Theme.of(context).textTheme;
 
     return Drawer(
-      backgroundColor: cs.surface,
+      backgroundColor: AppColors.surface,
       child: Column(
         children: [
           // ── Header ──────────────────────────────────────────────────
           DrawerHeader(
-            decoration: BoxDecoration(color: cs.primary),
+            decoration: const BoxDecoration(color: AppColors.primary),
             child: Row(
               children: [
                 Container(
                   width: 48, height: 48,
                   decoration: BoxDecoration(
-                    color:         Colors.white.withOpacity(0.2),
-                    borderRadius:  AppRadius.radiusMd,
+                    color:         Colors.white.withValues(alpha: 0.2),
+                    borderRadius:  BorderRadius.circular(AppSizes.radiusMid),
                   ),
                   child: const Icon(Icons.eco_rounded, color: Colors.white, size: 28),
                 ),
@@ -117,14 +116,16 @@ class AppDrawer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Smart Farm AI',
-                          style: tt.titleSmall?.copyWith(
-                              color: Colors.white, fontWeight: FontWeight.w700)),
+                      const Text('Smart Farm AI',
+                          style: TextStyle(
+                              color: Colors.white, 
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16)),
                       const SizedBox(height: 4),
                       Text(user?.name ?? '',
-                          style: tt.bodySmall?.copyWith(color: Colors.white70)),
+                          style: const TextStyle(color: Colors.white70, fontSize: 13)),
                       Text(user?.role.toLowerCase() ?? '',
-                          style: tt.caption?.copyWith(color: Colors.white60)),
+                          style: const TextStyle(color: Colors.white60, fontSize: 11)),
                     ],
                   ),
                 ),
@@ -137,10 +138,10 @@ class AppDrawer extends StatelessWidget {
             child: Consumer<NavigationProvider>(
               builder: (_, nav, __) => ListView(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                    horizontal: 12, vertical: 8),
                 children: List.generate(navItems.length, (i) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: SidebarTile(
                       item:       navItems[i],
                       isSelected: nav.selectedIndex == i,
@@ -182,34 +183,39 @@ class SidebarTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
     final isLong = item.label.length > 20;
 
     return InkWell(
       onTap:        onTap,
-      borderRadius: AppRadius.radiusFull,
+      borderRadius: BorderRadius.circular(99),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+            horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? cs.primary : Colors.transparent,
-          borderRadius: AppRadius.radiusFull,
-          boxShadow: isSelected ? AppShadows.sm : null,
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(99),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ] : null,
         ),
         child: Row(
           children: [
             // Icon — SVG preferred, IconData fallback
-            _TileIcon(item: item, isSelected: isSelected, cs: cs),
-            const SizedBox(width: AppSpacing.md),
+            _TileIcon(item: item, isSelected: isSelected),
+            const SizedBox(width: 12),
 
             // Label
             Flexible(
               child: Text(
                 item.label,
                 overflow: TextOverflow.ellipsis,
-                style: (isLong ? tt.labelSmall : tt.labelMedium)?.copyWith(
+                style: TextStyle(
+                  fontSize: isLong ? 12 : 14,
                   color:      isSelected ? Colors.white : AppColors.textDark,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                   letterSpacing: isLong ? -0.3 : 0,
@@ -226,17 +232,15 @@ class SidebarTile extends StatelessWidget {
 class _TileIcon extends StatelessWidget {
   final NavItem item;
   final bool isSelected;
-  final ColorScheme cs;
 
   const _TileIcon({
     required this.item,
     required this.isSelected,
-    required this.cs,
   });
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = isSelected ? Colors.white : cs.primary;
+    final iconColor = isSelected ? Colors.white : AppColors.primary;
 
     if (item.svgPath != null) {
       return SvgPicture.asset(

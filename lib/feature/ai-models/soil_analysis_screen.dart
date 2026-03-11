@@ -2,22 +2,10 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/custom_app_bar.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SOIL TYPE ANALYSIS SCREEN
-// Layout:
-//   White card: "Manual Soil Properties Input" header + form fields
-//               (pH, Moisture, Nitrogen, Phosphorus, Potassium)
-//               + Analyze Soil Properties button
-//   Two side-by-side result cards: Soil Type | Fertility Level
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// ─── Controller ───────────────────────────────────────────────────────────────
-
 enum SoilAnalysisStatus { idle, loading, result, error }
 
 class SoilResult {
-  final String soilType;
-  final String fertilityLevel; // 'High', 'Moderate', 'Low'
+  final String soilType, fertilityLevel;
   const SoilResult({required this.soilType, required this.fertilityLevel});
 }
 
@@ -38,18 +26,12 @@ class SoilAnalysisController extends ChangeNotifier {
 
   bool validate() => phCtrl.text.isNotEmpty;
 
-  // TODO: POST to YOUR_API/soil-manual
-  // Body: { ph, moisture, nitrogen, phosphorus, potassium }
-  // Response: { "soil_type": String, "fertility_level": String }
   Future<void> analyze() async {
     if (!validate()) {
       _errorMessage = 'Please enter at least the pH value.';
-      notifyListeners();
-      return;
+      notifyListeners(); return;
     }
-    _status       = SoilAnalysisStatus.loading;
-    _result       = null;
-    _errorMessage = null;
+    _status = SoilAnalysisStatus.loading; _result = null; _errorMessage = null;
     notifyListeners();
     try {
       await Future.delayed(const Duration(seconds: 2));
@@ -63,22 +45,16 @@ class SoilAnalysisController extends ChangeNotifier {
   }
 
   void reset() {
-    _status       = SoilAnalysisStatus.idle;
-    _result       = null;
-    _errorMessage = null;
+    _status = SoilAnalysisStatus.idle; _result = null; _errorMessage = null;
     notifyListeners();
   }
 
   @override
   void dispose() {
-    for (final c in [
-      phCtrl, moistureCtrl, nitrogenCtrl, phosphorusCtrl, potassiumCtrl
-    ]) c.dispose();
+    for (final c in [phCtrl, moistureCtrl, nitrogenCtrl, phosphorusCtrl, potassiumCtrl]) c.dispose();
     super.dispose();
   }
 }
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
 
 class SoilAnalysisScreen extends StatefulWidget {
   const SoilAnalysisScreen({super.key});
@@ -88,7 +64,6 @@ class SoilAnalysisScreen extends StatefulWidget {
 
 class _SoilAnalysisScreenState extends State<SoilAnalysisScreen> {
   final _ctrl = SoilAnalysisController();
-
   @override
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
@@ -97,8 +72,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const FeatureAppBar(
-        title:   'Soil Type Analysis',
-        svgPath: 'assets/images/icons/soil_icon.svg',
+        title: 'Soil Type Analysis', svgPath: 'assets/images/icons/soil_icon.svg',
       ),
       body: AnimatedBuilder(
         animation: _ctrl,
@@ -108,8 +82,6 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen> {
   }
 }
 
-// ─── Body ─────────────────────────────────────────────────────────────────────
-
 class _Body extends StatelessWidget {
   final SoilAnalysisController ctrl;
   const _Body({required this.ctrl});
@@ -117,38 +89,26 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.xxxl),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Page heading
               Text('Soil Type Analysis',
-                  style: tt.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textDark)),
+                  style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textDark)),
               const SizedBox(height: 4),
               Text('Analyze soil properties using AI by entering the soil data below',
-                  style: tt.bodySmall?.copyWith(color: AppColors.textMuted)),
-              const SizedBox(height: AppSpacing.xl),
-
-              // Form card
+                  style: tt.bodySmall?.copyWith(color: AppColors.textSubtle)),
+              const SizedBox(height: 20),
               _FormCard(ctrl: ctrl),
-              const SizedBox(height: AppSpacing.xl),
-
-              // Result row
-              if (ctrl.status == SoilAnalysisStatus.result &&
-                  ctrl.result != null)
+              const SizedBox(height: 20),
+              if (ctrl.status == SoilAnalysisStatus.result && ctrl.result != null)
                 _ResultRow(result: ctrl.result!),
-
-              if (ctrl.status == SoilAnalysisStatus.error &&
-                  ctrl.errorMessage != null) ...[
-                const SizedBox(height: AppSpacing.sm),
+              if (ctrl.status == SoilAnalysisStatus.error && ctrl.errorMessage != null) ...[
+                const SizedBox(height: 8),
                 _ErrorBanner(ctrl.errorMessage!),
               ],
             ],
@@ -159,8 +119,6 @@ class _Body extends StatelessWidget {
   }
 }
 
-// ─── Form card ────────────────────────────────────────────────────────────────
-
 class _FormCard extends StatelessWidget {
   final SoilAnalysisController ctrl;
   const _FormCard({required this.ctrl});
@@ -168,94 +126,64 @@ class _FormCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-
     return Container(
-      width:   double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color:        AppColors.surface,
-        borderRadius: AppRadius.radiusLg,
-        border:       Border.all(color: AppColors.border),
-        boxShadow:    AppShadows.sm,
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(children: [
-            Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(
-                color:        AppColors.primaryLight,
-                borderRadius: AppRadius.radiusMd,
-              ),
-              child: const Icon(Icons.straighten_outlined,
-                  color: AppColors.primary, size: 20),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(
+              color:        AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMid),
             ),
-            const SizedBox(width: AppSpacing.md),
-            Text('Manual Soil Properties Input',
-                style: tt.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textDark)),
-          ]),
-          const SizedBox(height: AppSpacing.xl),
-
-          _FieldLabel('Soil pH'),
-          const SizedBox(height: AppSpacing.sm),
-          _TextField(controller: ctrl.phCtrl, hint: '6.5'),
-          const SizedBox(height: AppSpacing.lg),
-
-          _FieldLabel('Moisture Level (%)'),
-          const SizedBox(height: AppSpacing.sm),
-          _TextField(controller: ctrl.moistureCtrl, hint: '48'),
-          const SizedBox(height: AppSpacing.lg),
-
-          _FieldLabel('Nitrogen (N)'),
-          const SizedBox(height: AppSpacing.sm),
-          _TextField(controller: ctrl.nitrogenCtrl, hint: '20'),
-          const SizedBox(height: AppSpacing.lg),
-
-          _FieldLabel('Phosphorus (P)'),
-          const SizedBox(height: AppSpacing.sm),
-          _TextField(controller: ctrl.phosphorusCtrl, hint: '30'),
-          const SizedBox(height: AppSpacing.lg),
-
-          _FieldLabel('Potassium (K)'),
-          const SizedBox(height: AppSpacing.sm),
-          _TextField(controller: ctrl.potassiumCtrl, hint: '25'),
-          const SizedBox(height: AppSpacing.xl),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: ctrl.status == SoilAnalysisStatus.loading
-                  ? null
-                  : ctrl.analyze,
-              style: ElevatedButton.styleFrom(
-                padding:         const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape:           RoundedRectangleBorder(
-                    borderRadius: AppRadius.radiusFull),
-                elevation: 0,
-              ),
-              child: ctrl.status == SoilAnalysisStatus.loading
-                  ? const SizedBox(
-                      width: 20, height: 20,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white))
-                  : const Text('Analyze Soil Properties',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 15)),
-            ),
+            child: const Icon(Icons.straighten_outlined, color: AppColors.primary, size: 20),
           ),
-        ],
-      ),
+          const SizedBox(width: 12),
+          Text('Manual Soil Properties Input',
+              style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textDark)),
+        ]),
+        const SizedBox(height: 20),
+
+        const _FieldLabel('Soil pH'),        const SizedBox(height: 8),
+        _TextField(controller: ctrl.phCtrl,         hint: '6.5'), const SizedBox(height: 16),
+        const _FieldLabel('Moisture Level (%)'),     const SizedBox(height: 8),
+        _TextField(controller: ctrl.moistureCtrl,   hint: '48'),  const SizedBox(height: 16),
+        const _FieldLabel('Nitrogen (N)'),           const SizedBox(height: 8),
+        _TextField(controller: ctrl.nitrogenCtrl,   hint: '20'),  const SizedBox(height: 16),
+        const _FieldLabel('Phosphorus (P)'),         const SizedBox(height: 8),
+        _TextField(controller: ctrl.phosphorusCtrl, hint: '30'),  const SizedBox(height: 16),
+        const _FieldLabel('Potassium (K)'),          const SizedBox(height: 8),
+        _TextField(controller: ctrl.potassiumCtrl,  hint: '25'),  const SizedBox(height: 20),
+
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: ctrl.status == SoilAnalysisStatus.loading ? null : ctrl.analyze,
+            style: ElevatedButton.styleFrom(
+              padding:         const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+              elevation: 0,
+            ),
+            child: ctrl.status == SoilAnalysisStatus.loading
+                ? const SizedBox(width: 20, height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Text('Analyze Soil Properties',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          ),
+        ),
+      ]),
     );
   }
 }
-
-// ─── Result row (two cards side by side) ─────────────────────────────────────
 
 class _ResultRow extends StatelessWidget {
   final SoilResult result;
@@ -271,128 +199,75 @@ class _ResultRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt            = Theme.of(context).textTheme;
+    final tt             = Theme.of(context).textTheme;
     final fertilityColor = _fertilityColor;
 
-    return Row(
-      children: [
-        // Soil Type card
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+    Widget card({required String label, required Widget content}) => Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:        AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(
+            width: 32, height: 32,
             decoration: BoxDecoration(
-              color:        AppColors.surface,
-              borderRadius: AppRadius.radiusLg,
-              border:       Border.all(color: AppColors.border),
-              boxShadow:    AppShadows.sm,
+              color:        AppColors.primarySurface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Container(
-                    width: 32, height: 32,
-                    decoration: BoxDecoration(
-                      color:        AppColors.primaryLight,
-                      borderRadius: AppRadius.radiusSm,
-                    ),
-                    child: const Icon(Icons.straighten_outlined,
-                        color: AppColors.primary, size: 16),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text('Soil Type',
-                      style: tt.bodySmall?.copyWith(
-                          color: AppColors.textMuted)),
-                ]),
-                const SizedBox(height: AppSpacing.md),
-                Container(
-                  width:   double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color:        AppColors.primaryLight,
-                    borderRadius: AppRadius.radiusMd,
-                    border:       Border.all(
-                        color: AppColors.primary.withOpacity(0.25)),
-                  ),
-                  child: Center(
-                    child: Text(result.soilType,
-                        style: tt.titleSmall?.copyWith(
-                            color:      AppColors.primary,
-                            fontWeight: FontWeight.w600)),
-                  ),
-                ),
-              ],
-            ),
+            child: const Icon(Icons.straighten_outlined, color: AppColors.primary, size: 16),
           ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-
-        // Fertility Level card
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color:        AppColors.surface,
-              borderRadius: AppRadius.radiusLg,
-              border:       Border.all(color: AppColors.border),
-              boxShadow:    AppShadows.sm,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Container(
-                    width: 32, height: 32,
-                    decoration: BoxDecoration(
-                      color:        AppColors.primaryLight,
-                      borderRadius: AppRadius.radiusSm,
-                    ),
-                    child: const Icon(Icons.straighten_outlined,
-                        color: AppColors.primary, size: 16),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text('Fertility Level',
-                      style: tt.bodySmall?.copyWith(
-                          color: AppColors.textMuted)),
-                ]),
-                const SizedBox(height: AppSpacing.md),
-                Container(
-                  width:   double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color:        fertilityColor.withOpacity(0.08),
-                    borderRadius: AppRadius.radiusMd,
-                    border:       Border.all(
-                        color: fertilityColor.withOpacity(0.3)),
-                  ),
-                  child: Center(
-                    child: Text(result.fertilityLevel,
-                        style: tt.titleSmall?.copyWith(
-                            color:      fertilityColor,
-                            fontWeight: FontWeight.w600)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+          const SizedBox(width: 8),
+          Text(label, style: tt.bodySmall?.copyWith(color: AppColors.textSubtle)),
+        ]),
+        const SizedBox(height: 12),
+        content,
+      ]),
     );
+
+    return Row(children: [
+      Expanded(child: card(
+        label: 'Soil Type',
+        content: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color:        AppColors.primarySurface,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+            border:       Border.all(color: AppColors.primary.withOpacity(0.25)),
+          ),
+          child: Center(child: Text(result.soilType,
+              style: tt.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600))),
+        ),
+      )),
+      const SizedBox(width: 12),
+      Expanded(child: card(
+        label: 'Fertility Level',
+        content: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color:        fertilityColor.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+            border:       Border.all(color: fertilityColor.withOpacity(0.3)),
+          ),
+          child: Center(child: Text(result.fertilityLevel,
+              style: tt.titleSmall?.copyWith(color: fertilityColor, fontWeight: FontWeight.w600))),
+        ),
+      )),
+    ]);
   }
 }
-
-// ─── Shared helpers ───────────────────────────────────────────────────────────
 
 class _FieldLabel extends StatelessWidget {
   final String text;
   const _FieldLabel(this.text);
-
   @override
   Widget build(BuildContext context) => Text(text,
-      style: Theme.of(context)
-          .textTheme
-          .bodyMedium
-          ?.copyWith(color: AppColors.textDark));
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textDark));
 }
 
 class _TextField extends StatelessWidget {
@@ -403,28 +278,16 @@ class _TextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller:   controller,
-      keyboardType: TextInputType.number,
-      style:        const TextStyle(
-          fontSize: 14, color: AppColors.textDark),
+      controller: controller, keyboardType: TextInputType.number,
+      style: const TextStyle(fontSize: 14, color: AppColors.textDark),
       decoration: InputDecoration(
-        hintText:   hint,
-        hintStyle:  const TextStyle(
-            fontSize: 14, color: AppColors.textDisabled),
-        filled:     true,
-        fillColor:  AppColors.surfaceAlt,
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: 14),
-        border: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(color: AppColors.border)),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(color: AppColors.border)),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: AppRadius.radiusMd,
-            borderSide:   const BorderSide(
-                color: AppColors.primary, width: 1.5)),
+        hintText: hint,
+        hintStyle: const TextStyle(fontSize: 14, color: AppColors.textDisabled),
+        filled: true, fillColor: AppColors.background,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border:        OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMid), borderSide: const BorderSide(color: AppColors.cardBorder)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMid), borderSide: const BorderSide(color: AppColors.cardBorder)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMid), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
       ),
     );
   }
@@ -437,22 +300,17 @@ class _ErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color:        AppColors.errorLight,
-        borderRadius: AppRadius.radiusMd,
-        border:       Border.all(color: AppColors.errorBorder),
+        color:        const Color(0xFFFEF2F2),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+        border:       Border.all(color: AppColors.error.withOpacity(0.3)),
       ),
       child: Row(children: [
         const Icon(Icons.error_outline, size: 16, color: AppColors.error),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Text(message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.error)),
-        ),
+        const SizedBox(width: 8),
+        Expanded(child: Text(message,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error))),
       ]),
     );
   }

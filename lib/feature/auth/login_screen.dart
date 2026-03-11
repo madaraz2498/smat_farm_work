@@ -4,17 +4,6 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import 'register_screen.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LoginScreen
-//
-// Design contract:
-//  • Uses context.read<AuthProvider>().login() — no watch needed.
-//  • Loading spinner prevents double-submit.
-//  • Inline red error banner on failure.
-//  • On success → does NOTHING imperatively; AuthWrapper detects the auth
-//    state change and replaces the root widget automatically.
-//  • Dev credentials hint box has been REMOVED for production build.
-// ─────────────────────────────────────────────────────────────────────────────
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -30,8 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool    _isLoading       = false;
   String? _errorMessage;
 
-  // Role dropdown is a UI hint only — not used for auth decisions.
-
   @override
   void dispose() {
     _emailCtrl.dispose();
@@ -39,41 +26,27 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ── Sign-in handler ───────────────────────────────────────────────────────
-
   Future<void> _handleSignIn() async {
-    if (_isLoading) return; // guard against double-tap
+    if (_isLoading) return;
 
     final email    = _emailCtrl.text.trim();
     final password = _passwordCtrl.text.trim();
 
-    // Basic client-side validation before hitting the provider
     if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter your email and password.';
-      });
+      setState(() => _errorMessage = 'Please enter your email and password.');
       return;
     }
 
-    setState(() {
-      _isLoading    = true;
-      _errorMessage = null;
-    });
+    setState(() { _isLoading = true; _errorMessage = null; });
 
-    // Await the provider — the mock check runs synchronously inside try{}
-    // but the finally{} block ensures _isLoading is always cleared.
     final result = await context.read<AuthProvider>().login(
       email:    email,
       password: password,
     );
 
-    // Guard: widget may have been unmounted while awaiting (e.g. hot-reload)
     if (!mounted) return;
 
     if (result.success) {
-      // ✅ AuthWrapper in main.dart is watching AuthProvider.status.
-      //    It will rebuild and render DashboardScreen / AdminDashboardScreen
-      //    automatically — no Navigator call needed here.
       setState(() => _isLoading = false);
     } else {
       setState(() {
@@ -82,8 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildCard() {
     return Container(
       decoration: BoxDecoration(
-        // ✅ color is INSIDE BoxDecoration — no Flutter assertion triggered
         color:        AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border:       Border.all(color: AppColors.border),
+        border:       Border.all(color: AppColors.cardBorder),
         boxShadow: [
           BoxShadow(
             color:      Colors.black.withOpacity(0.08),
@@ -126,8 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // ── Logo ───────────────────────────────────────────────────────────
           Center(
             child: Container(
-              width:  64,
-              height: 64,
+              width: 64, height: 64,
               decoration: BoxDecoration(
                 color:        AppColors.primary,
                 borderRadius: BorderRadius.circular(16),
@@ -146,21 +115,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // ── Titles ─────────────────────────────────────────────────────────
           const Center(
-            child: Text(
-              'Smart Farm AI',
-              style: TextStyle(
-                fontSize:   22,
-                fontWeight: FontWeight.w700,
-                color:      AppColors.textDark,
-              ),
-            ),
+            child: Text('Smart Farm AI',
+                style: TextStyle(
+                    fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           ),
           const SizedBox(height: 6),
           const Center(
-            child: Text(
-              'Sign in to manage your smart farm',
-              style: TextStyle(fontSize: 14, color: AppColors.textMuted),
-            ),
+            child: Text('Sign in to manage your smart farm',
+                style: TextStyle(fontSize: 14, color: AppColors.textSubtle)),
           ),
           const SizedBox(height: 22),
 
@@ -171,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
 
           // ── Email ──────────────────────────────────────────────────────────
-          _FieldLabel('Email'),
+          const _FieldLabel('Email'),
           const SizedBox(height: 7),
           _InputField(
             controller:   _emailCtrl,
@@ -181,16 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 16),
 
           // ── Password ───────────────────────────────────────────────────────
-          _FieldLabel('Password'),
+          const _FieldLabel('Password'),
           const SizedBox(height: 7),
           _PasswordField(
-            controller:        _passwordCtrl,
-            obscure:           _obscurePassword,
-            onToggleObscure:   () => setState(
-                    () => _obscurePassword = !_obscurePassword),
+            controller:      _passwordCtrl,
+            obscure:         _obscurePassword,
+            onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
           ),
           const SizedBox(height: 24),
-
 
           // ── Sign In button ─────────────────────────────────────────────────
           SizedBox(
@@ -200,12 +160,12 @@ class _LoginScreenState extends State<LoginScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor:         AppColors.primary,
                 foregroundColor:         Colors.white,
-                disabledBackgroundColor: AppColors.primaryMuted,
+                disabledBackgroundColor: AppColors.primaryLight,
                 disabledForegroundColor: Colors.white70,
-                elevation:   0,
+                elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.full)),
+                    borderRadius: BorderRadius.circular(50)),
               ),
               child: _isLoading
                   ? const SizedBox(
@@ -213,12 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: CircularProgressIndicator(
                     color: Colors.white, strokeWidth: 2.5),
               )
-                  : const Text(
-                'Sign In',
-                style: TextStyle(
-                    fontSize:   16,
-                    fontWeight: FontWeight.w600),
-              ),
+                  : const Text('Sign In',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 22),
@@ -227,23 +183,18 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Don't have an account? ",
-                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
-              ),
+              const Text("Don't have an account? ",
+                  style: TextStyle(fontSize: 14, color: AppColors.textSubtle)),
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const RegisterScreen()),
                 ),
-                child: const Text(
-                  'Sign up',
-                  style: TextStyle(
-                    fontSize:   14,
-                    color:      AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: const Text('Sign up',
+                    style: TextStyle(
+                        fontSize:   14,
+                        color:      AppColors.primary,
+                        fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -263,9 +214,7 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) => Text(
     text,
     style: const TextStyle(
-        fontSize:   14,
-        fontWeight: FontWeight.w500,
-        color:      AppColors.textDark),
+        fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textDark),
   );
 }
 
@@ -273,6 +222,7 @@ class _InputField extends StatelessWidget {
   final TextEditingController controller;
   final String                hint;
   final TextInputType         keyboardType;
+
   const _InputField({
     required this.controller,
     required this.hint,
@@ -283,10 +233,9 @@ class _InputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // ✅ color inside BoxDecoration — correct pattern
-        color:        AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border:       Border.all(color: AppColors.border),
+        color:        AppColors.background,
+        borderRadius: BorderRadius.circular(50),
+        border:       Border.all(color: AppColors.cardBorder),
       ),
       child: TextField(
         controller:   controller,
@@ -294,11 +243,9 @@ class _InputField extends StatelessWidget {
         style: const TextStyle(fontSize: 14, color: AppColors.textDark),
         decoration: InputDecoration(
           hintText:       hint,
-          hintStyle:      const TextStyle(
-              fontSize: 14, color: AppColors.textDisabled),
+          hintStyle:      const TextStyle(fontSize: 14, color: AppColors.textDisabled),
           border:         InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
@@ -309,6 +256,7 @@ class _PasswordField extends StatelessWidget {
   final TextEditingController controller;
   final bool                  obscure;
   final VoidCallback          onToggleObscure;
+
   const _PasswordField({
     required this.controller,
     required this.obscure,
@@ -319,71 +267,29 @@ class _PasswordField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:        AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border:       Border.all(color: AppColors.border),
+        color:        AppColors.background,
+        borderRadius: BorderRadius.circular(50),
+        border:       Border.all(color: AppColors.cardBorder),
       ),
       child: TextField(
         controller:  controller,
         obscureText: obscure,
         style: const TextStyle(fontSize: 14, color: AppColors.textDark),
         decoration: InputDecoration(
-          hintText:  'Enter your password',
-          hintStyle: const TextStyle(
-              fontSize: 14, color: AppColors.textDisabled),
-          border:    InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 14),
+          hintText:       'Enter your password',
+          hintStyle:      const TextStyle(fontSize: 14, color: AppColors.textDisabled),
+          border:         InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           suffixIcon: GestureDetector(
             onTap: onToggleObscure,
             child: Icon(
               obscure
                   ? Icons.visibility_off_outlined
                   : Icons.visibility_outlined,
-              color: AppColors.textMuted,
+              color: AppColors.textSubtle,
               size:  20,
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RoleDropdown extends StatelessWidget {
-  final String?              value;
-  final List<String>         items;
-  final ValueChanged<String?> onChanged;
-  const _RoleDropdown({
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color:        AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border:       Border.all(color: AppColors.border),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value:      value,
-          hint:       const Text('Select your role',
-              style: TextStyle(fontSize: 14, color: AppColors.textDisabled)),
-          isExpanded: true,
-          icon:       const Icon(Icons.keyboard_arrow_down,
-              color: AppColors.textMuted),
-          style: const TextStyle(fontSize: 14, color: AppColors.textDark),
-          dropdownColor: AppColors.surface,
-          borderRadius:  BorderRadius.circular(12),
-          items: items
-              .map((r) => DropdownMenuItem<String>(value: r, child: Text(r)))
-              .toList(),
-          onChanged: onChanged,
         ),
       ),
     );
@@ -400,21 +306,17 @@ class _ErrorBanner extends StatelessWidget {
       width:   double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color:        AppColors.errorLight,
+        color:        const Color(0xFFFEF2F2),
         borderRadius: BorderRadius.circular(10),
-        border:       Border.all(color: AppColors.errorBorder),
+        border:       Border.all(color: AppColors.error.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline,
-              color: AppColors.error, size: 16),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 16),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                  fontSize: 13, color: AppColors.error),
-            ),
+            child: Text(message,
+                style: const TextStyle(fontSize: 13, color: AppColors.error)),
           ),
         ],
       ),
