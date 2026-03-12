@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_farm/feature/admin/admin_dashboard_screen.dart';
 import 'package:smart_farm/feature/farmer/dashboard/welcome_screen.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 import 'package:smart_farm/providers/auth_provider.dart';
@@ -46,11 +47,11 @@ class SmartFarmApp extends StatelessWidget {
       ),
 
       // ── Entry point ──────────────────────────────────────────────────
-      home: const WelcomeScreen(),
+      home: const AdminDashboardScreen(),
 
       // ── Named routes ─────────────────────────────────────────────────
       routes: {
-        '/dashboard': (_) => const WelcomeScreen(),
+        '/dashboard': (_) => const AdminDashboardScreen(),
       },
     );
   }

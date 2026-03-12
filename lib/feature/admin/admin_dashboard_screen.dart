@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_farm/theme/app_theme.dart';
-
-// Models
-import 'models/admin_nav_item.dart';
+import 'package:smart_farm/providers/auth_provider.dart';
 
 // Widgets
 import 'widgets/admin_sidebar.dart';
@@ -20,10 +19,6 @@ import 'pages/admin_settings_page.dart';
 //
 // Owns ONLY:  Scaffold, navigation state, Drawer wiring.
 // Everything visual lives in widget / page files.
-//
-// Layout:
-//   Wide  (≥ 700 px): Column [ AdminTopBar ] [ Row [ AdminSidebar | page ] ]
-//   Narrow (< 700 px): Scaffold Drawer + Column [ AdminTopBar | page ]
 // ─────────────────────────────────────────────────────────────────────────────
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -36,18 +31,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
 
   static const List<AdminNavItem> _navItems = [
-    AdminNavItem(icon: Icons.dashboard_outlined,             label: 'Admin Dashboard'),
-    AdminNavItem(icon: Icons.people_outline,                 label: 'User Management'),
-    AdminNavItem(icon: Icons.settings_applications_outlined, label: 'System Management'),
-    AdminNavItem(icon: Icons.bar_chart_outlined,             label: 'System Reports'),
-    AdminNavItem(icon: Icons.tune_outlined,                  label: 'Settings'),
+    AdminNavItem(icon: Icons.dashboard_outlined, label: 'Admin Dashboard'),
+    AdminNavItem(icon: Icons.people_outline, label: 'User Management'),
+    AdminNavItem(
+        icon: Icons.settings_applications_outlined,
+        label: 'System Management',
+        isAdminOnly: true),
+    AdminNavItem(icon: Icons.bar_chart_outlined, label: 'System Reports'),
+    AdminNavItem(icon: Icons.tune_outlined, label: 'Settings'),
   ];
 
   String get _pageTitle => _navItems[_selectedIndex].label;
 
   void _onNavSelected(int index) {
     setState(() => _selectedIndex = index);
-    if (Navigator.canPop(context)) Navigator.pop(context); // close Drawer
+  }
+
+  void _handleSignOut() {
+    context.read<AuthProvider>().logout();
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   @override
@@ -59,10 +61,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       // Drawer is only wired on narrow screens; null on wide
       drawer: wide
           ? null
-          : AdminSidebar.asDrawer(
-              items:          _navItems,
-              selectedIndex:  _selectedIndex,
-              onItemSelected: _onNavSelected,
+          : AdminDrawer(
+              navItems: _navItems,
+              selectedIndex: _selectedIndex,
+              onTap: _onNavSelected,
+              onSignOut: _handleSignOut,
             ),
       body: Column(
         children: [
@@ -73,9 +76,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               children: [
                 if (wide)
                   AdminSidebar(
-                    items:          _navItems,
-                    selectedIndex:  _selectedIndex,
-                    onItemSelected: _onNavSelected,
+                    navItems: _navItems,
+                    selectedIndex: _selectedIndex,
+                    onTap: _onNavSelected,
+                    onSignOut: _handleSignOut,
                   ),
                 Expanded(child: _buildPage()),
               ],
@@ -87,15 +91,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   // ── Page router ─────────────────────────────────────────────────────────────
-  // Uses const constructors → Flutter skips rebuild if widget type is unchanged.
 
   Widget _buildPage() {
     switch (_selectedIndex) {
-      case 1:  return const UserManagementPage();
-      case 2:  return const SystemManagementPage();
-      case 3:  return const SystemReportsPage();
-      case 4:  return const AdminSettingsPage();
-      default: return const DashboardPage();
+      case 1:
+        return const UserManagementPage();
+      case 2:
+        return const SystemManagementPage();
+      case 3:
+        return const SystemReportsPage();
+      case 4:
+        return const AdminSettingsScreen();
+      default:
+        return const DashboardPage();
     }
   }
 }
