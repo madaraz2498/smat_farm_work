@@ -76,7 +76,9 @@ class _StatCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 40, height: 40,
@@ -87,26 +89,24 @@ class _StatCard extends StatelessWidget {
             child: Icon(stat.icon, color: AppColors.primary, size: 20),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  stat.value,
-                  style: tt.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color:      AppColors.textDark,
-                  ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                stat.value,
+                style: tt.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color:      AppColors.textDark,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  stat.label,
-                  style: tt.bodySmall?.copyWith(color: AppColors.textSubtle),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                stat.label,
+                style: tt.bodySmall?.copyWith(color: AppColors.textSubtle),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ],
       ),
@@ -406,10 +406,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(
-        title:   'Reports',
-        svgPath: 'assets/images/icons/reports_icon.svg',
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         child: Center(

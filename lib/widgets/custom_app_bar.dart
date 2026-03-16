@@ -14,6 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String svgPath;
   final List<Widget>? actions;
   final bool showBack;
+  final String pageTitle;
 
   const CustomAppBar({
 
@@ -22,6 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.svgPath,
     this.actions,
     this.showBack = true,
+    required this.pageTitle,
 
   });
 

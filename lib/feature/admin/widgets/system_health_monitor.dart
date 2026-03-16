@@ -55,9 +55,6 @@ class SystemHealthMonitor extends StatelessWidget {
         const SizedBox(height: 12),
         _ModelGrid(models: _models),
         const SizedBox(height: 24),
-        const Text('Recent Audit Log', style: AppTextStyles.cardTitle),
-        const SizedBox(height: 12),
-        _AuditLog(logs: _logs),
       ],
     );
   }
@@ -182,58 +179,6 @@ class _OnlineDot extends StatelessWidget {
 
 // ── Audit log ─────────────────────────────────────────────────────────────────
 
-class _AuditLog extends StatelessWidget {
-  const _AuditLog({required this.logs});
-  final List<_LogEntry> logs;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color:        AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSizes.radiusCard),
-        border:       Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      child: Column(
-        children: logs.asMap().entries.map((e) {
-          final isLast  = e.key == logs.length - 1;
-          final log     = e.value;
-          final success = log.result == 'Success';
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              border: isLast ? null : Border(
-                bottom: BorderSide(color: Colors.black.withOpacity(0.04)),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 7, height: 7,
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    color: success ? AppColors.success : AppColors.error,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(log.action,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: AppColors.textMid),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(log.time, style: AppTextStyles.caption),
-                const SizedBox(width: 8),
-                _ResultBadge(result: log.result, success: success),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
 
 class _ResultBadge extends StatelessWidget {
   const _ResultBadge({required this.result, required this.success});

@@ -8,7 +8,6 @@ import 'package:smart_farm/feature/ai-models/soil_analysis_screen.dart';
 import 'package:smart_farm/feature/ai-models/chatbot_screen.dart';
 import 'package:smart_farm/feature/farmer/settings/settings_screen.dart';
 import 'package:smart_farm/providers/auth_provider.dart';
-import 'package:smart_farm/providers/navigation_provider.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../reports/reports_screen.dart';
@@ -17,53 +16,44 @@ import 'components/dashboard_main_content.dart';
 import 'components/dashboard_sidebar.dart';
 import 'components/notification_dialog.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// DASHBOARD SCREEN  (Main Shell — Orchestrator Only)
-//
-// Responsibilities:
-//   1. Build the Scaffold + responsive layout (sidebar vs drawer).
-//   2. Delegate all UI rendering to dedicated child widgets.
-//   3. Own the navigation logic (_navigateTo / _showNotifications).
-// ═══════════════════════════════════════════════════════════════════════════════
-
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
-  // ── Breakpoint ────────────────────────────────────────────────────────────
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  int _selectedIndex = 0; // 0 = dashboard home
+
   static const double _sidebarBreakpoint = 700;
 
-  // ── Navigation ────────────────────────────────────────────────────────────
-  static Widget _screenFor(int navIndex) {
-    switch (navIndex) {
-      case 1:
-        return const PlantDiseaseScreen();
-      case 2:
-        return const AnimalWeightScreen();
-      case 3:
-        return const CropRecommendationScreen();
-      case 4:
-        return const SoilAnalysisScreen();
-      case 5:
-        return const FruitQualityScreen();
-      case 6:
-        return const ChatbotScreen();
-      case 7:
-        return const ReportsScreen();
-      case 8:
-        return const SettingsScreen();
+  // ── Body routing (Switches content based on Sidebar selection) ───────────
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return DashboardMainContent(
+          features: kFeatureItems,
+          onFeatureTap: (featureIndex) => _navigateTo(featureIndex + 1),
+        );
+      case 1: return const PlantDiseaseScreen();
+      case 2: return const AnimalWeightScreen();
+      case 3: return const CropRecommendationScreen();
+      case 4: return const SoilAnalysisScreen();
+      case 5: return const FruitQualityScreen();
+      case 6: return const ChatbotScreen();
+      case 7: return const ReportsScreen();
+      case 8: return const SettingsScreen();
       default:
-        return const SizedBox.shrink();
+        return DashboardMainContent(
+          features: kFeatureItems,
+          onFeatureTap: (i) => _navigateTo(i + 1),
+        );
     }
   }
 
-  void _navigateTo(BuildContext context, int index) {
-    context.read<NavigationProvider>().setIndex(index);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => _screenFor(index)),
-    ).then((_) {
-      context.read<NavigationProvider>().reset();
-    });
+  void _navigateTo(int index) {
+    setState(() => _selectedIndex = index);
   }
 
   void _showNotifications(BuildContext context) {
@@ -73,57 +63,61 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    // ✅ جلب بيانات اليوزر من AuthProvider
     final user = context.watch<AuthProvider>().currentUser;
     final screenWidth = MediaQuery.of(context).size.width;
     final showSidebar = screenWidth > _sidebarBreakpoint;
+    
+    // Get current nav item info for the AppBar
+    final currentItem = kNavItems[_selectedIndex];
 
     return Scaffold(
       backgroundColor: AppColors.background,
 
-      // ✅ Mobile drawer — يظهر لما يضغط على زرار الـ hamburger
+      // Mobile Drawer (SideBarDrawer)
       drawer: showSidebar
           ? null
           : SideBarDrawer(
-        navItems: kNavItems,
-        onNavigate: (i) => _navigateTo(context, i),
-      ),
+              navItems: kNavItems,
+              onNavigate: _navigateTo,
+            ),
 
       body: Column(
         children: [
-          // ── Top navigation bar ───────────────────────────────────────
-          // ✅ DashboardNavBar بيعمل Scaffold.of(ctx).openDrawer() داخلياً
-          //    لما showBurger = true، مش محتاج onBurgerTap منفصل
-          DashboardNavBar(
+          // ── Unified Top Nav Bar ──────────────────────────────────────────
+          CustomAppBar(
+            isDashboard: _selectedIndex == 0,
+            title: currentItem.label,
+            svgPath: currentItem.svg,
             showBurger: !showSidebar,
-            onNotificationTap: () => _showNotifications(context),
-            // ✅ بيانات اليوزر الحقيقية بدل القيم الفارغة
+            showBack: false, // No back needed since sidebar is persistent/accessible
             userName: user?.name ?? 'Farmer',
+            userRole: user?.role ?? 'Farmer',
+            onNotificationTap: () => _showNotifications(context),
           ),
 
-          // ── Body: sidebar + content ──────────────────────────────────
+          // ── Main Content Area ────────────────────────────────────────────
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ✅ Persistent sidebar (desktop only — شاشة > 700px)
+                // Persistent Sidebar (Desktop)
                 if (showSidebar)
                   DashboardSidebar(
                     navItems: kNavItems,
-                    onNavigate: (i) => _navigateTo(context, i),
+                    selectedIndex: _selectedIndex,
+                    onNavigate: _navigateTo,
                   ),
 
-                // Main scrollable content area
+                // Dynamic Body
                 Expanded(
-                  child: DashboardMainContent(
-                    features: kFeatureItems,
-                    onFeatureTap: (featureIndex) {
-                      // Feature cards map 1-to-1 to nav indices 1–6.
-                      _navigateTo(context, featureIndex + 1);
-                    },
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: KeyedSubtree(
+                      key: ValueKey<int>(_selectedIndex),
+                      child: _buildBody(),
+                    ),
                   ),
                 ),
               ],

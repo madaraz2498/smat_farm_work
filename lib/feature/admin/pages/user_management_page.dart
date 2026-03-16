@@ -14,12 +14,8 @@ class UserManagementPage extends StatelessWidget {
   // Sample dataset (in production, inject from a repository / provider)
   static const List<UserData> _users = [
     UserData(id: 'USR001', name: 'Ahmed Hassan',   email: 'ahmed@smartfarm.ai',   role: 'Farmer',     status: 'Active',    joined: 'Jan 12, 2025', lastLogin: '2 hrs ago',    requests: 234),
-    UserData(id: 'USR002', name: 'Sara Mohamed',   email: 'sara@smartfarm.ai',    role: 'Agronomist', status: 'Active',    joined: 'Feb 3, 2025',  lastLogin: '1 day ago',    requests: 512),
-    UserData(id: 'USR003', name: 'Omar Khalil',    email: 'omar@smartfarm.ai',    role: 'Researcher', status: 'Active',    joined: 'Mar 7, 2025',  lastLogin: '3 hrs ago',    requests: 891),
     UserData(id: 'USR004', name: 'Nour Ali',       email: 'nour@smartfarm.ai',    role: 'Farmer',     status: 'Inactive',  joined: 'Jan 28, 2025', lastLogin: '2 weeks ago',  requests: 45),
     UserData(id: 'USR005', name: 'Mahmoud Samy',   email: 'mahmoud@smartfarm.ai', role: 'Farmer',     status: 'Active',    joined: 'Apr 1, 2025',  lastLogin: '5 min ago',    requests: 178),
-    UserData(id: 'USR006', name: 'Laila Ibrahim',  email: 'laila@smartfarm.ai',   role: 'Agronomist', status: 'Suspended', joined: 'Feb 14, 2025', lastLogin: '1 month ago',  requests: 67),
-    UserData(id: 'USR007', name: 'Khaled Nasser',  email: 'khaled@smartfarm.ai',  role: 'Researcher', status: 'Active',    joined: 'Mar 19, 2025', lastLogin: '6 hrs ago',    requests: 1203),
     UserData(id: 'USR008', name: 'Dina Farouk',    email: 'dina@smartfarm.ai',    role: 'Farmer',     status: 'Active',    joined: 'Apr 10, 2025', lastLogin: '30 min ago',   requests: 89),
   ];
 
@@ -27,7 +23,7 @@ class UserManagementPage extends StatelessWidget {
     StatCardData(
       label:     'Total Users',
       value:     '${users.length}',
-      icon:      Icons.people_outline,
+      icon:      Icons.person_outline_outlined,
       iconColor: AppColors.primary,
       iconBg:    AppColors.primarySurface,
     ),
@@ -35,22 +31,22 @@ class UserManagementPage extends StatelessWidget {
       label:     'Active',
       value:     '${users.where((u) => u.status == 'Active').length}',
       icon:      Icons.check_circle_outline,
-      iconColor: AppColors.info,
-      iconBg:    Color(0xFFE3F2FD),
+      iconColor: AppColors.primary,
+      iconBg:    AppColors.primarySurface,
     ),
     StatCardData(
       label:     'Inactive',
       value:     '${users.where((u) => u.status == 'Inactive').length}',
-      icon:      Icons.pause_circle_outline,
-      iconColor: AppColors.warning,
+      icon:      Icons.highlight_off,
+      iconColor: AppColors.error,
       iconBg:    Color(0xFFFFF3E0),
     ),
     StatCardData(
       label:     'Admins',
       value:     '${users.where((u) => u.status == 'Suspended').length}',
-      icon:      Icons.block_outlined,
-      iconColor: AppColors.error,
-      iconBg:    Color(0xFFFEF2F2),
+      icon:      Icons.shield_outlined,
+      iconColor: AppColors.info,
+      iconBg:    Color(0xFFE3F2FD),
     ),
   ];
 
@@ -80,7 +76,7 @@ class UserManagementPage extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => AdminForms.showAddUser(context),
                 icon:  const Icon(Icons.person_add_outlined, size: 18),
-                label: const Text('Add User'),
+                label: const Text('Add Admin'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

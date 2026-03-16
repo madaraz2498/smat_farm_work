@@ -19,50 +19,42 @@ import 'dashboard_constants.dart';
 /// Persistent sidebar rendered on screens wider than 700 px.
 class DashboardSidebar extends StatelessWidget {
   final List<NavItem> navItems;
+  final int selectedIndex;                           // ← أضف هذا
   final void Function(int index) onNavigate;
 
   const DashboardSidebar({
     super.key,
     required this.navItems,
+    required this.selectedIndex,                     // ← أضف هذا
     required this.onNavigate,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NavigationProvider>(
-      builder: (_, nav, __) =>
-          Container(
-            width: AppSizes.sidebarWidth,
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              border: Border(
-                  right: BorderSide(color: AppColors.cardBorder, width: 1.33)),
+    return Container(
+      width: AppSizes.sidebarWidth,
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(
+          right: BorderSide(color: AppColors.cardBorder, width: 1.33),
+        ),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(AppSizes.pagePadding),
+        children: List.generate(navItems.length, (i) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: SidebarNavTile(
+              item:       navItems[i],
+              isSelected: selectedIndex == i,        // ← استخدم الـ prop مباشرة
+              onTap:      () => onNavigate(i),
             ),
-            child: ListView(
-              padding: const EdgeInsets.all(AppSizes.pagePadding),
-              children: List.generate(navItems.length, (i) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: SidebarNavTile(
-                    item: navItems[i],
-                    isSelected: nav.selectedIndex == i,
-                    onTap: () => _handleTap(context, i),
-                  ),
-                );
-              }),
-            ),
-          ),
+          );
+        }),
+      ),
     );
   }
-
-  void _handleTap(BuildContext context, int index) {
-    context.read<NavigationProvider>().setIndex(index);
-    if (index >= 1) {
-      onNavigate(index);
-    }
-  }
 }
-
 // ─── DashboardDrawer ──────────────────────────────────────────────────────────
 
 /// Mobile drawer that slides in from the left.

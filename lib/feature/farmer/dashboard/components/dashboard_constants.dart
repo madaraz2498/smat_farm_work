@@ -63,7 +63,7 @@ class NotifItem {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /// All sidebar / drawer navigation items.
-const List<NavItem> kNavItems = [
+const List<NavItem> farmerNavItems = [
   NavItem(
     icon: Icons.home_outlined,
     label: 'Welcome',

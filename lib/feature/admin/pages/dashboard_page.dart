@@ -20,9 +20,9 @@ class DashboardPage extends StatelessWidget {
       iconBg:    AppColors.primarySurface,
     ),
     StatCardData(
-      label:     'AI Requests Today',
+      label:     'Total Analysis This Month',
       value:     '4,920',
-      delta:     '+320 vs yesterday',
+      delta:     '+320 vs last month',
       icon:      Icons.api_outlined,
       iconColor: AppColors.info,
       iconBg:    Color(0xFFE3F2FD),
@@ -35,8 +35,9 @@ class DashboardPage extends StatelessWidget {
       iconBg:    Color(0xFFF3E5F5),
     ),
     StatCardData(
-      label:     'Pending Reports',
+      label:     'Most Used',
       value:     '12',
+      delta: 'Planet Disease Detection',
       icon:      Icons.pending_actions_outlined,
       iconColor: AppColors.warning,
       iconBg:    Color(0xFFFFF3E0),

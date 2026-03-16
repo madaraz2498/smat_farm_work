@@ -26,16 +26,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   String _environment = 'Production';
   static const _kEnvironments = ['Production', 'Staging', 'Development'];
 
-  bool _openRegistration = true;
   String _defaultRole = 'Farmer';
-  static const _kRoles = ['Farmer', 'Agronomist', 'Researcher'];
-
-  bool _twoFaRequired = false;
-  bool _ipWhitelist = false;
-  bool _auditLog = true;
-
-  String _logLevel = 'Info';
-  static const _kLogLevels = ['Verbose', 'Debug', 'Info', 'Warning', 'Error'];
+  static const _kRoles = ['Farmer', 'Admin'];
 
   bool _maintenanceMode = false;
 

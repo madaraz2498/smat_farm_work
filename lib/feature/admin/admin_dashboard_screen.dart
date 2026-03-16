@@ -30,15 +30,18 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
 
-  static const List<AdminNavItem> _navItems = [
+  static const List<AdminNavItem> _adminNavItems = [
     AdminNavItem(icon: Icons.dashboard_outlined, label: 'Admin Dashboard'),
     AdminNavItem(icon: Icons.people_outline, label: 'User Management'),
-    AdminNavItem(icon: Icons.settings_applications_outlined, label: 'System Management', isAdminOnly: true),
+    AdminNavItem(
+        icon: Icons.settings_applications_outlined,
+        label: 'System Management',
+        isAdminOnly: true),
     AdminNavItem(icon: Icons.bar_chart_outlined, label: 'System Reports'),
     AdminNavItem(icon: Icons.tune_outlined, label: 'Settings'),
   ];
 
-  String get _pageTitle => _navItems[_selectedIndex].label;
+  String get _pageTitle => _adminNavItems[_selectedIndex].label;
 
   void _onNavSelected(int index) {
     setState(() => _selectedIndex = index);
@@ -59,21 +62,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       drawer: wide
           ? null
           : AdminDrawer(
-              navItems: _navItems,
+              navItems: _adminNavItems,
               selectedIndex: _selectedIndex,
               onTap: _onNavSelected,
               onSignOut: _handleSignOut,
             ),
       body: Column(
         children: [
-          AdminTopBar(pageTitle: _pageTitle),
+          SafeArea(
+            child: AdminTopBar(
+              pageTitle: _pageTitle,
+              onNotificationTap: () {},
+            ),
+          ),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (wide)
                   AdminSidebar(
-                    navItems: _navItems,
+                    navItems: _adminNavItems,
                     selectedIndex: _selectedIndex,
                     onTap: _onNavSelected,
                     onSignOut: _handleSignOut,

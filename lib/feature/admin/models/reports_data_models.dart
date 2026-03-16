@@ -85,8 +85,8 @@ const List<TopUser> kTopUsers = [
 
 /// KPI summary cards shown at the top of the reports page.
 const List<StatCardData> kReportsKpis = [
-  StatCardData(label: 'Total Requests', value: '10,488', icon: Icons.api_outlined,         iconColor: AppColors.primary,       iconBg: AppColors.primarySurface),
-  StatCardData(label: 'Success Rate',   value: '96.8%',  icon: Icons.check_circle_outline, iconColor: AppColors.info,          iconBg: Color(0xFFE3F2FD)),
-  StatCardData(label: 'Active Users',   value: '1,284',  icon: Icons.people_outline,       iconColor: Color(0xFF9C27B0),       iconBg: Color(0xFFF3E5F5)),
-  StatCardData(label: 'Avg Response',   value: '1.3s',   icon: Icons.timer_outlined,       iconColor: AppColors.warning,       iconBg: Color(0xFFFFF3E0)),
+  StatCardData(label: 'Total Analysis', value: '10,488', icon: Icons.show_chart,         iconColor: AppColors.primary,       iconBg: AppColors.primarySurface),
+  StatCardData(label: 'AI Services',   value: '6 Actives',  icon: Icons.memory,           iconColor: AppColors.primary,          iconBg: AppColors.primarySurface),
+  StatCardData(label: 'Active Users',   value: '1,284',  icon: Icons.people_outline,       iconColor: AppColors.info,       iconBg: Color(0xffDBEAFE)),
+  StatCardData(label: 'Avg Response',   value: '1.3s',   icon: Icons.trending_up_rounded,       iconColor: AppColors.warning,       iconBg: Color(0xFFFFF3E0)),
 ];

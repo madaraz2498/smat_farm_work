@@ -36,12 +36,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(
-
-        title:    'Settings',
-        svgPath:  'assets/images/icons/crop_icon.svg',
-        showBack: true,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         child: Center(

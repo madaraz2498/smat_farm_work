@@ -101,51 +101,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title:   'Smart Farm Chatbot',
-        svgPath: 'assets/images/icons/chat_icon.svg',
-        actions: [
-          // Language EN/AR toggle
-          AnimatedBuilder(
-            animation: _ctrl,
-            builder: (_, __) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
-                onTap: () => _ctrl.setLanguage(
-                    _ctrl.language == 'English' ? 'Arabic' : 'English'),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color:        Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    _ctrl.language == 'English' ? 'EN' : 'AR',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color:      Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Clear chat
-          AnimatedBuilder(
-            animation: _ctrl,
-            builder: (_, __) => _ctrl.messages.isEmpty
-                ? const SizedBox.shrink()
-                : IconButton(
-              onPressed: _ctrl.clearChat,
-              icon: const Icon(Icons.delete_outline_rounded,
-                  size: 20, color: AppColors.textSubtle),
-            ),
-          ),
-        ],
-      ),
       body: AnimatedBuilder(
         animation: _ctrl,
         builder: (context, _) => Column(children: [
