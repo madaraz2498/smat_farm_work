@@ -24,7 +24,7 @@ class _UserListTableState extends State<UserListTable> {
   String _selectedStatus = 'All';
 
   static const List<String> _roles    = ['All', 'Farmer', 'Agronomist', 'Researcher', 'Admin'];
-  static const List<String> _statuses = ['All', 'Active', 'Inactive', 'Suspended'];
+  static const List<String> _statuses = ['All', 'Active', 'Inactive', 'Admins'];
 
   List<UserData> get _filtered => widget.users.where((u) {
     final q = _searchQuery.toLowerCase();
@@ -248,7 +248,7 @@ class _UserRow extends StatelessWidget {
   static const _statusColors = <String, Color>{
     'Active':    Color(0xFF4CAF50),
     'Inactive':  Color(0xFFFF9800),
-    'Suspended': Color(0xFFEF4444),
+    'Admins': Color(0xFFEF4444),
   };
 
   @override

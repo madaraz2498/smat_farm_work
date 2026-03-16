@@ -52,10 +52,8 @@ class _AddUserDialog extends StatefulWidget {
 class _AddUserDialogState extends State<_AddUserDialog> {
   final _nameCtrl  = TextEditingController();
   final _emailCtrl = TextEditingController();
-  String _role     = 'Farmer';
   bool   _saving   = false;
 
-  static const _roles = ['Farmer', 'Agronomist', 'Researcher', 'Admin'];
 
   @override
   void dispose() {
@@ -90,7 +88,7 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
-                    child: Text('Add New User', style: AppTextStyles.cardTitle),
+                    child: Text('Add New Admin', style: AppTextStyles.cardTitle),
                   ),
                   IconButton(
                     icon:      const Icon(Icons.close, size: 18),
@@ -99,10 +97,6 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Full Name
-              _FormField(label: 'Full Name', hint: 'e.g. Ahmed Hassan', controller: _nameCtrl),
-              const SizedBox(height: 14),
 
               // Email
               _FormField(
@@ -113,33 +107,6 @@ class _AddUserDialogState extends State<_AddUserDialog> {
               ),
               const SizedBox(height: 14),
 
-              // Role dropdown
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Role', style: AppTextStyles.label),
-                  const SizedBox(height: 6),
-                  Container(
-                    width:   double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color:        AppColors.background,
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMid),
-                      border: Border.all(color: Colors.black.withOpacity(0.12)),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value:   _role,
-                        isExpanded: true,
-                        style:   const TextStyle(fontSize: 13, color: AppColors.textDark),
-                        items:   _roles.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
-                        onChanged: (v) { if (v != null) setState(() => _role = v); },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
 
               // Buttons
               Row(
@@ -178,7 +145,7 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                                 strokeWidth: 2, color: Colors.white,
                               ),
                             )
-                          : const Text('Add User'),
+                          : const Text('Add Admin'),
                     ),
                   ),
                 ],

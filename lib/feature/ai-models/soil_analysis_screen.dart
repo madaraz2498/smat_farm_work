@@ -71,7 +71,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title: 'Soil Type Analysis', svgPath: 'assets/images/icons/soil_icon.svg',
       ),
       body: AnimatedBuilder(

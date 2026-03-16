@@ -94,7 +94,7 @@ class _CropRecommendationScreenState extends State<CropRecommendationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title:   'Crop Recommendation (ML)',
         svgPath: 'assets/images/icons/crop_icon.svg',
       ),

@@ -16,7 +16,6 @@ abstract class AuthService {
     required String name,
     required String email,
     required String password,
-    required String role,
   });
   Future<void> logout();
 }
@@ -55,7 +54,7 @@ class MockAuthService implements AuthService {
 
     final u = match.first;
     return AuthResult.ok(
-      UserModel(id: u['id']!, name: u['name']!, email: u['email']!, role: u['role']!),
+      UserModel(id: u['id']!, name: u['name']!, email: u['email']!,),
     );
   }
 
@@ -64,7 +63,6 @@ class MockAuthService implements AuthService {
     required String name,
     required String email,
     required String password,
-    required String role,
   }) async {
     await Future.delayed(const Duration(milliseconds: 600));
 
@@ -80,7 +78,6 @@ class MockAuthService implements AuthService {
       'name': name.trim(),
       'email': cleanEmail,
       'password': password.trim(),
-      'role': role,
     };
     _users.add(newUser);
 
@@ -89,7 +86,6 @@ class MockAuthService implements AuthService {
         id: newUser['id']!,
         name: newUser['name']!,
         email: newUser['email']!,
-        role: newUser['role']!,
       ),
     );
   }

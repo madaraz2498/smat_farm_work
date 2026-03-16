@@ -61,7 +61,7 @@ class _FruitQualityScreenState extends State<FruitQualityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title: 'Fruit Quality Analysis', svgPath: 'assets/images/icons/fruit_icon.svg',
       ),
       body: AnimatedBuilder(

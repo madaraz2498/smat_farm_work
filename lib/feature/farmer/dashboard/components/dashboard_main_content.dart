@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_farm/feature/farmer/dashboard/components/feature_card.dart';
 import 'package:smart_farm/providers/auth_provider.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 import 'dashboard_constants.dart';
-import '../../../../widgets/custom_feature_card.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DASHBOARD MAIN CONTENT

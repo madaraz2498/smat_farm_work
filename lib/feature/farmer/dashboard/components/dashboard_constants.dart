@@ -146,8 +146,8 @@ const List<FeatureItem> kFeatureItems = [
 ];
 
 /// Notification entries shown inside the notification dialog.
-final List<NotifItem> kNotifItems = [
-  const NotifItem(
+const List<NotifItem> kNotifItems = [
+  NotifItem(
     icon: Icons.warning_amber_rounded,
     color: Color(0xFFF59E0B),
     title: 'Soil moisture low',
@@ -161,14 +161,14 @@ final List<NotifItem> kNotifItems = [
     subtitle: 'Possible blight risk on tomato crops.',
     time: '1 hr ago',
   ),
-  const NotifItem(
+  NotifItem(
     icon: Icons.monitor_weight_outlined,
     color: Color(0xFF6366F1),
     title: 'Weight report ready',
     subtitle: 'Animal batch #12 weight analysis done.',
     time: '3 hr ago',
   ),
-  const NotifItem(
+  NotifItem(
     icon: Icons.cloud_outlined,
     color: Color(0xFF0EA5E9),
     title: 'Weather alert',

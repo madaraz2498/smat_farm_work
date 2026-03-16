@@ -22,7 +22,6 @@ const _kDevUser = UserModel(
   id:    'dev_farmer_001',
   name:  'John Farmer',
   email: 'farmer@smartfarm.com',
-  role:  'Farmer',
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -57,12 +56,6 @@ class AuthProvider extends ChangeNotifier {
   String get displayName =>
       (_user?.name.isNotEmpty ?? false) ? _user!.name : 'Farmer';
 
-  String get displayRole =>
-      (_user?.role.isNotEmpty ?? false) ? _user!.role : 'User';
-
-  bool get isAdmin =>
-      _user?.email.trim().toLowerCase() == 'admin@smartfarm.com' ||
-          (_user?.role.toLowerCase() == 'admin');
 
   // ── Constructor ────────────────────────────────────────────────────────────
 
@@ -107,27 +100,6 @@ class AuthProvider extends ChangeNotifier {
         return AuthResult.fail(_errorMessage!);
       }
 
-      // Hard-coded mock credentials (checked before real service)
-      if (cleanEmail == 'admin@smartfarm.com' && cleanPass == 'admin123') {
-        _user = const UserModel(
-          id: 'admin_001', name: 'Admin User',
-          email: 'admin@smartfarm.com', role: 'Admin',
-        );
-        _status = AuthStatus.authenticated;
-        notifyListeners();
-        return AuthResult.ok(_user!);
-      }
-
-      if (cleanEmail == 'farmer@smartfarm.com' && cleanPass == 'farmer123') {
-        _user = const UserModel(
-          id: 'farmer_001', name: 'John Farmer',
-          email: 'farmer@smartfarm.com', role: 'Farmer',
-        );
-        _status = AuthStatus.authenticated;
-        notifyListeners();
-        return AuthResult.ok(_user!);
-      }
-
       // Fall through to service for dynamically registered accounts
       final result = await _service.login(cleanEmail, cleanPass);
       if (result.success && result.user != null) {
@@ -137,7 +109,7 @@ class AuthProvider extends ChangeNotifier {
         // ── COMMENTED OUT for dev: login gate disabled ───────────────────
         // _errorMessage = result.error ?? 'Invalid credentials.';
         // _status       = AuthStatus.unauthenticated;
-        //
+
         // In dev mode: just accept any unknown credential as the Farmer.
         _user   = _kDevUser;
         _status = AuthStatus.authenticated;
@@ -165,7 +137,6 @@ class AuthProvider extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
-    required String role,
   }) async {
     _isLoading    = true;
     _errorMessage = null;
@@ -173,7 +144,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       final result = await _service.register(
-        name: name, email: email, password: password, role: role,
+        name: name, email: email, password: password,
       );
       if (result.success && result.user != null) {
         _user   = result.user;

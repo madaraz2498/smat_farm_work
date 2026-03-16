@@ -205,14 +205,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                   badge: 'Admin Only',
                   tiles: [
                     SettingsTileCard(
-                      icon: Icons.how_to_reg_outlined,
-                      label: 'Open Registration',
-                      subtitle: 'Allow new users to sign up',
-                      type: SettingsTileType.toggle,
-                      toggleValue: _openRegistration,
-                      onToggleChanged: (v) => setState(() => _openRegistration = v),
-                    ),
-                    SettingsTileCard(
                       icon: Icons.manage_accounts_outlined,
                       label: 'Default User Role',
                       subtitle: _defaultRole,

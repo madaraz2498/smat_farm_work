@@ -7,6 +7,7 @@ import 'package:smart_farm/feature/ai-models/plant_disease_screen.dart';
 import 'package:smart_farm/feature/ai-models/soil_analysis_screen.dart';
 import 'package:smart_farm/feature/ai-models/chatbot_screen.dart';
 import 'package:smart_farm/feature/farmer/settings/settings_screen.dart';
+import 'package:smart_farm/providers/auth_provider.dart';
 import 'package:smart_farm/providers/navigation_provider.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 import '../../../widgets/custom_app_bar.dart';
@@ -23,26 +24,15 @@ import 'components/notification_dialog.dart';
 //   1. Build the Scaffold + responsive layout (sidebar vs drawer).
 //   2. Delegate all UI rendering to dedicated child widgets.
 //   3. Own the navigation logic (_navigateTo / _showNotifications).
-//
-// This widget intentionally contains ZERO layout or styling code.
-// All visual decisions live in the widget files under ../widgets/.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/// The root shell of the SmartFarmAI dashboard.
-///
-/// Renders a persistent [DashboardSidebar] on screens ≥ 700 px wide, or a
-/// hamburger-triggered [DashboardDrawer] on narrower screens.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   // ── Breakpoint ────────────────────────────────────────────────────────────
-
-  /// Screens wider than this value show the persistent sidebar.
   static const double _sidebarBreakpoint = 700;
 
   // ── Navigation ────────────────────────────────────────────────────────────
-
-  /// Returns the screen widget for the given [navIndex].
   static Widget _screenFor(int navIndex) {
     switch (navIndex) {
       case 1:
@@ -66,20 +56,16 @@ class WelcomeScreen extends StatelessWidget {
     }
   }
 
-  /// Pushes the target screen and resets the [NavigationProvider] on return.
   void _navigateTo(BuildContext context, int index) {
-    // Update the provider before pushing so the sidebar highlight is instant.
     context.read<NavigationProvider>().setIndex(index);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => _screenFor(index)),
     ).then((_) {
-      // Reset to home when user pops back to the dashboard.
       context.read<NavigationProvider>().reset();
     });
   }
 
-  /// Shows the notification dialog centred over the current route.
   void _showNotifications(BuildContext context) {
     showDialog(
       context: context,
@@ -88,31 +74,34 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    // ✅ جلب بيانات اليوزر من AuthProvider
+    final user = context.watch<AuthProvider>().currentUser;
     final screenWidth = MediaQuery.of(context).size.width;
     final showSidebar = screenWidth > _sidebarBreakpoint;
 
     return Scaffold(
       backgroundColor: AppColors.background,
 
-      // Mobile drawer — null on desktop so Scaffold ignores it.
+      // ✅ Mobile drawer — يظهر لما يضغط على زرار الـ hamburger
       drawer: showSidebar
           ? null
-          : DashboardDrawer(
-              navItems: kNavItems,
-              onNavigate: (i) => _navigateTo(context, i),
-            ),
+          : SideBarDrawer(
+        navItems: kNavItems,
+        onNavigate: (i) => _navigateTo(context, i),
+      ),
 
       body: Column(
         children: [
           // ── Top navigation bar ───────────────────────────────────────
+          // ✅ DashboardNavBar بيعمل Scaffold.of(ctx).openDrawer() داخلياً
+          //    لما showBurger = true، مش محتاج onBurgerTap منفصل
           DashboardNavBar(
             showBurger: !showSidebar,
             onNotificationTap: () => _showNotifications(context),
-            userName: '',
-            userRole: '',
+            // ✅ بيانات اليوزر الحقيقية بدل القيم الفارغة
+            userName: user?.name ?? 'Farmer',
           ),
 
           // ── Body: sidebar + content ──────────────────────────────────
@@ -120,7 +109,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Persistent sidebar (desktop only)
+                // ✅ Persistent sidebar (desktop only — شاشة > 700px)
                 if (showSidebar)
                   DashboardSidebar(
                     navItems: kNavItems,

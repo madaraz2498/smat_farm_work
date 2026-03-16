@@ -79,7 +79,7 @@ class _AnimalWeightScreenState extends State<AnimalWeightScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title:   'Animal Weight Estimation (Computer Vision)',
         svgPath: 'assets/images/icons/animal_icon.svg',
       ),

@@ -30,27 +30,28 @@ class DashboardSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<NavigationProvider>(
-      builder: (_, nav, __) => Container(
-        width: 256,
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(
-              right: BorderSide(color: AppColors.cardBorder, width: 1.33)),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.all(AppSizes.pagePadding),
-          children: List.generate(navItems.length, (i) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: SidebarNavTile(
-                item: navItems[i],
-                isSelected: nav.selectedIndex == i,
-                onTap: () => _handleTap(context, i),
-              ),
-            );
-          }),
-        ),
-      ),
+      builder: (_, nav, __) =>
+          Container(
+            width: AppSizes.sidebarWidth,
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                  right: BorderSide(color: AppColors.cardBorder, width: 1.33)),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.all(AppSizes.pagePadding),
+              children: List.generate(navItems.length, (i) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: SidebarNavTile(
+                    item: navItems[i],
+                    isSelected: nav.selectedIndex == i,
+                    onTap: () => _handleTap(context, i),
+                  ),
+                );
+              }),
+            ),
+          ),
     );
   }
 
@@ -65,11 +66,11 @@ class DashboardSidebar extends StatelessWidget {
 // ─── DashboardDrawer ──────────────────────────────────────────────────────────
 
 /// Mobile drawer that slides in from the left.
-class DashboardDrawer extends StatelessWidget {
+class SideBarDrawer extends StatelessWidget {
   final List<NavItem> navItems;
   final void Function(int index) onNavigate;
 
-  const DashboardDrawer({
+  const SideBarDrawer({
     super.key,
     required this.navItems,
     required this.onNavigate,
@@ -77,11 +78,10 @@ class DashboardDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().currentUser;
+    final user = context
+        .watch<AuthProvider>()
+        .currentUser;
     final userName = user?.name ?? '';
-    final userRole = (user?.role != null && user!.role.isNotEmpty)
-        ? user.role.toLowerCase()
-        : '';
 
     return Drawer(
       backgroundColor: AppColors.surface,
@@ -91,73 +91,73 @@ class DashboardDrawer extends StatelessWidget {
             decoration: const BoxDecoration(color: AppColors.primary),
             child: Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+              Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                    'assets/images/icons/plant_icon.svg',
+
+                    colorFilter:const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                   ),
-                  child: const Icon(Icons.eco_rounded,
-                      color: Colors.white, size: 28),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Smart Farm AI',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
+              ),
+            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Smart Farm AI',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
-                      if (userName.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          userName,
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 13),
-                        ),
-                      ],
-                      if (userRole.isNotEmpty)
-                        Text(
-                          userRole,
-                          style: const TextStyle(
-                              color: Colors.white60, fontSize: 11),
-                        ),
+                    ),
+                    if (userName.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 13),
+                      ),
                     ],
-                  ),
+                  ],
                 ),
+              ),
               ],
             ),
           ),
           Expanded(
             child: Consumer<NavigationProvider>(
-              builder: (_, nav, __) => ListView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8),
-                children: List.generate(navItems.length, (i) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: SidebarNavTile(
-                      item: navItems[i],
-                      isSelected: nav.selectedIndex == i,
-                      onTap: () {
-                        Navigator.pop(context);
-                        context.read<NavigationProvider>().setIndex(i);
-                        if (i >= 1) {
-                          onNavigate(i);
-                        }
-                      },
-                    ),
-                  );
-                }),
-              ),
+              builder: (_, nav, __) =>
+                  ListView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8),
+                    children: List.generate(navItems.length, (i) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: SidebarNavTile(
+                          item: navItems[i],
+                          isSelected: nav.selectedIndex == i,
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.read<NavigationProvider>().setIndex(i);
+                            if (i >= 1) {
+                              onNavigate(i);
+                            }
+                          },
+                        ),
+                      );
+                    }),
+                  ),
             ),
           ),
         ],
@@ -182,7 +182,7 @@ class SidebarNavTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLong = item.label.length > 20;
+    final isTitleLong = item.label.length > 20;
 
     return Tooltip(
       message: item.label,
@@ -218,12 +218,12 @@ class SidebarNavTile extends StatelessWidget {
                   item.label,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: isLong ? 12.5 : 14,
+                    fontSize: isTitleLong ? 12.5 : 14,
                     color: isSelected ? Colors.white : AppColors.textDark,
                     fontWeight: isSelected
                         ? FontWeight.w600
                         : FontWeight.w400,
-                    letterSpacing: isLong ? -0.3 : 0,
+                    letterSpacing: isTitleLong ? -0.3 : 0,
                   ),
                 ),
               ),

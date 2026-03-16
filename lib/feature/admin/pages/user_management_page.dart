@@ -46,7 +46,7 @@ class UserManagementPage extends StatelessWidget {
       iconBg:    Color(0xFFFFF3E0),
     ),
     StatCardData(
-      label:     'Suspended',
+      label:     'Admins',
       value:     '${users.where((u) => u.status == 'Suspended').length}',
       icon:      Icons.block_outlined,
       iconColor: AppColors.error,

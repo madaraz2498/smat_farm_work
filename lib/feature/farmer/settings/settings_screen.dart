@@ -20,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool   _pushNotif   = true;
   bool   _emailAlerts = true;
 
-  static const _languages = ['English', 'Arabic', 'French'];
+  static const _languages = ['English', 'Arabic',];
 
   @override
   void dispose() {
@@ -36,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
 
         title:    'Settings',
         svgPath:  'assets/images/icons/crop_icon.svg',

@@ -19,11 +19,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmCtrl = TextEditingController();
   bool _obscurePass    = true;
   bool _obscureConfirm = true;
-  String? _selectedRole;
 
-  final List<String> _roles = ['Farmer', 'Admin'];
 
-  String? _nameError, _emailError, _passError, _confirmError, _roleError;
+  String? _nameError, _emailError, _passError, _confirmError ;
 
   @override
   void dispose() {
@@ -37,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _validate() {
     bool ok = true;
     setState(() {
-      _nameError = _emailError = _passError = _confirmError = _roleError = null;
+      _nameError = _emailError = _passError = _confirmError  = null;
 
       if (_nameCtrl.text.trim().isEmpty) {
         _nameError = 'Full name is required.'; ok = false;
@@ -64,10 +62,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else if (_confirmCtrl.text != _passCtrl.text) {
         _confirmError = 'Passwords do not match.'; ok = false;
       }
-
-      if (_selectedRole == null) {
-        _roleError = 'Please select your role.'; ok = false;
-      }
     });
     return ok;
   }
@@ -80,7 +74,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name:     _nameCtrl.text.trim(),
       email:    _emailCtrl.text.trim(),
       password: _passCtrl.text,
-      role:     _selectedRole!,
     );
   }
 
@@ -186,19 +179,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Role
-                  const FieldLabel('Role'),
-                  RoleDropdown(
-                    value:     _selectedRole,
-                    items:     _roles,
-                    errorText: _roleError,
-                    onChanged: (val) => setState(() {
-                      _selectedRole = val;
-                      _roleError    = null;
-                    }),
-                  ),
-                  const SizedBox(height: 24),
 
                   // Button
                   Consumer<AuthProvider>(

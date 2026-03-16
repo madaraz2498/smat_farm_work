@@ -33,10 +33,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   static const List<AdminNavItem> _navItems = [
     AdminNavItem(icon: Icons.dashboard_outlined, label: 'Admin Dashboard'),
     AdminNavItem(icon: Icons.people_outline, label: 'User Management'),
-    AdminNavItem(
-        icon: Icons.settings_applications_outlined,
-        label: 'System Management',
-        isAdminOnly: true),
+    AdminNavItem(icon: Icons.settings_applications_outlined, label: 'System Management', isAdminOnly: true),
     AdminNavItem(icon: Icons.bar_chart_outlined, label: 'System Reports'),
     AdminNavItem(icon: Icons.tune_outlined, label: 'Settings'),
   ];

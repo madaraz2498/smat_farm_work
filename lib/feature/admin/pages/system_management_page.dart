@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SystemManagementPage  —  configure AI models, general settings, security.
+// SystemManagementPage  —  configure AI models, general settings .
 // Uses AnimatedBuilder for tab switching (no unnecessary rebuilds).
 // ─────────────────────────────────────────────────────────────────────────────
 class SystemManagementPage extends StatefulWidget {
@@ -72,7 +72,6 @@ class _SystemManagementPageState extends State<SystemManagementPage>
     switch (_tab.index) {
       case 1:  return _GeneralSettingsTab(
         maintenanceMode:    _maintenanceMode,
-        registrationOpen:   _registrationOpen,
         emailNotifications: _emailNotifications,
         autoBackup:         _autoBackup,
         maxRequests:        _maxRequests,
@@ -80,7 +79,6 @@ class _SystemManagementPageState extends State<SystemManagementPage>
         onToggle: (field, v) => setState(() {
           switch (field) {
             case 'maintenance':   _maintenanceMode    = v; break;
-            case 'registration':  _registrationOpen   = v; break;
             case 'email':         _emailNotifications = v; break;
             case 'backup':        _autoBackup         = v; break;
           }
@@ -90,7 +88,6 @@ class _SystemManagementPageState extends State<SystemManagementPage>
           if (field == 'timeout')  _sessionTimeout = v;
         },
       );
-      case 2:  return const _SecurityTab();
       default: return _AIModelsTab(
         plantDisease:  _plantDisease,
         animalWeight:  _animalWeight,
@@ -141,7 +138,6 @@ class _TabBar extends StatelessWidget {
         tabs: const [
           Tab(text: 'AI Models'),
           Tab(text: 'General Settings'),
-          Tab(text: 'Security'),
         ],
       ),
     );
@@ -277,13 +273,13 @@ class _ModelCard extends StatelessWidget {
 
 class _GeneralSettingsTab extends StatelessWidget {
   const _GeneralSettingsTab({
-    required this.maintenanceMode, required this.registrationOpen,
+    required this.maintenanceMode,
     required this.emailNotifications, required this.autoBackup,
     required this.maxRequests, required this.sessionTimeout,
     required this.onToggle, required this.onInputChange,
   });
 
-  final bool maintenanceMode, registrationOpen, emailNotifications, autoBackup;
+  final bool maintenanceMode, emailNotifications, autoBackup;
   final String maxRequests, sessionTimeout;
   final void Function(String field, bool v) onToggle;
   final void Function(String field, String v) onInputChange;
@@ -294,14 +290,8 @@ class _GeneralSettingsTab extends StatelessWidget {
       children: [
         _SettingsCard(title: 'Platform Settings', children: [
           _ToggleRow('Maintenance Mode',    'Disable user access temporarily', maintenanceMode,    AppColors.error,   (v) => onToggle('maintenance',  v)),
-          _ToggleRow('Open Registration',   'Allow new user sign-ups',         registrationOpen,   AppColors.primary, (v) => onToggle('registration', v)),
           _ToggleRow('Email Notifications', 'System alerts via email',         emailNotifications, AppColors.info,    (v) => onToggle('email',        v)),
           _ToggleRow('Auto Backup',         'Daily database snapshots',        autoBackup,         const Color(0xFF9C27B0), (v) => onToggle('backup', v)),
-        ]),
-        const SizedBox(height: 16),
-        _SettingsCard(title: 'Limits & Quotas', children: [
-          _InputRow('Max Requests / Day',    'Per-user daily limit',         maxRequests,    (v) => onInputChange('requests', v)),
-          _InputRow('Session Timeout (min)', 'Auto-logout after inactivity', sessionTimeout, (v) => onInputChange('timeout',  v)),
         ]),
         const SizedBox(height: 16),
         _SaveButton(label: 'Save General Settings', onPressed: () {
@@ -422,100 +412,7 @@ class _InputRow extends StatelessWidget {
   }
 }
 
-// ── Security tab ───────────────────────────────────────────────────────────────
 
-class _SecurityTab extends StatelessWidget {
-  const _SecurityTab();
-
-  static const _policies = [
-    (Icons.lock_outline,       'Password Policy',       'Min 8 chars, uppercase, number required', AppColors.primary),
-    (Icons.security,           'Two-Factor Auth',        'Available for Admin accounts',            AppColors.info),
-    (Icons.block_outlined,     'Failed Login Lockout',   'Lock after 5 fails (30 min)',             AppColors.warning),
-    (Icons.vpn_lock_outlined,  'API Rate Limiting',      '100 requests / min per IP',               Color(0xFF9C27B0)),
-  ];
-
-  static const _auditLogs = [
-    ('Admin login',               '09:14', true),
-    ('User USR006 suspended',     '08:50', true),
-    ('System settings changed',   '08:12', true),
-    ('Failed login attempt',      '07:31', false),
-    ('Database backup complete',  '03:00', true),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _SettingsCard(title: 'Access Control', children: [
-          ..._policies.map((p) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Row(
-              children: [
-                Container(
-                  padding:    const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color:        p.$4.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(p.$1, size: 16, color: p.$4),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(p.$2, style: AppTextStyles.label),
-                      Text(p.$3, style: AppTextStyles.caption),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ]),
-        const SizedBox(height: 16),
-        _SettingsCard(title: 'Audit Log', children: [
-          ..._auditLogs.map((log) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 7, height: 7,
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    color: log.$3 ? AppColors.success : AppColors.error,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(log.$1, style: const TextStyle(fontSize: 12, color: AppColors.textMid)),
-                ),
-                Text(log.$2, style: AppTextStyles.caption),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: log.$3 ? const Color(0xFFE8F5E9) : const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    log.$3 ? 'Success' : 'Failed',
-                    style: TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.w600,
-                      color: log.$3 ? AppColors.success : AppColors.error,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ]),
-        const SizedBox(height: 16),
-        _SaveButton(label: 'Export Audit Log', onPressed: () {}),
-      ],
-    );
-  }
-}
 
 // ── Shared save button ─────────────────────────────────────────────────────────
 

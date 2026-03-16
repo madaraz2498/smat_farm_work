@@ -60,7 +60,7 @@ class _PlantDiseaseScreenState extends State<PlantDiseaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title: 'Plant Disease Detection (CNN)', svgPath: 'assets/images/icons/plant_icon.svg',
       ),
       body: AnimatedBuilder(

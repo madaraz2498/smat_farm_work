@@ -101,7 +101,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FeatureAppBar(
+      appBar: CustomAppBar(
         title:   'Smart Farm Chatbot',
         svgPath: 'assets/images/icons/chat_icon.svg',
         actions: [

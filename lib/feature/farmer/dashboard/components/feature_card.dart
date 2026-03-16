@@ -1,142 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smart_farm/theme/app_theme.dart';
-import 'dashboard_constants.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// FEATURE CARD
-// Displays a single AI-feature with icon, title, and description.
-// Includes a hover scale + shadow animation for Web / Desktop targets.
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────────────────────
+// FeatureCard
+//
+// The card shown in the Welcome/Dashboard grid. Currently non-tappable
+// (displays only); set [onTap] to make it navigate.
+// ─────────────────────────────────────────────────────────────────────────────
 
-/// An interactive card that represents one SmartFarmAI feature.
-///
-/// On Web/Desktop a [MouseRegion] drives a subtle scale-up and deeper shadow
-/// via [AnimatedContainer] so the card feels alive without being distracting.
-class FeatureCard extends StatefulWidget {
-  /// The feature data to display.
-  final FeatureItem feature;
+class FeatureCard extends StatelessWidget {
+  final String svgPath;
+  final String title;
+  final String description;
 
-  /// When true the card fills its parent's height (used inside a sized [Wrap] cell).
-  final bool fixedHeight;
-
-  /// Optional tap callback; if provided the card becomes tappable.
+  /// When provided the card becomes tappable (InkWell ripple + arrow icon).
   final VoidCallback? onTap;
+
+  /// Fixed height mode: set true when rendering inside a Wrap with SizedBox.
+  final bool fixedHeight;
 
   const FeatureCard({
     super.key,
-    required this.feature,
-    this.fixedHeight = true,
+    required this.svgPath,
+    required this.title,
+    required this.description,
     this.onTap,
+    this.fixedHeight = false,
   });
 
   @override
-  State<FeatureCard> createState() => _FeatureCardState();
-}
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
 
-class _FeatureCardState extends State<FeatureCard> {
-  bool _hovered = false;
-
-  // ── helpers ──────────────────────────────────────────────────────────────
-
-  List<BoxShadow> get _shadow => _hovered
-      ? [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.12),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ]
-      : [
+    final card = Container(
+      decoration: BoxDecoration(
+        color:        AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+        border:       Border.all(color: AppColors.cardBorder),
+        boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
-        ];
+        ],
+      ),
+      padding: const EdgeInsets.all(AppSizes.cardPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: fixedHeight ? MainAxisSize.max : MainAxisSize.min,
+        children: [
+          // Icon chip
+          _IconChip(svgPath: svgPath),
+          const SizedBox(height: AppSizes.itemPadding),
 
-  // ── build ─────────────────────────────────────────────────────────────────
+          // Title row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTextStyles.cardTitle,
+                ),
+              ),
+              if (onTap != null) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: AppColors.primary
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 6),
+
+          // Description
+          Text(
+            description,
+            style: AppTextStyles.pageSubtitle.copyWith(fontSize: 13),
+            maxLines: fixedHeight ? 2 : null,
+            overflow: fixedHeight ? TextOverflow.ellipsis : null,
+          ),
+        ],
+      ),
+    );
+
+    if (onTap == null) return card;
+
+    // Tappable variant
+    return Material(
+      color:        Colors.transparent,
+      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+      child: InkWell(
+        onTap:        onTap,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+        splashColor:  AppColors.primary.withValues(alpha: 0.08),
+        child: card,
+      ),
+    );
+  }
+}
+
+// ─── Icon chip ────────────────────────────────────────────────────────────────
+
+class _IconChip extends StatelessWidget {
+  final String svgPath;
+
+  const _IconChip({required this.svgPath});
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      cursor: widget.onTap != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedScale(
-          scale: _hovered ? 1.025 : 1.0,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOutCubic,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-              border: Border.all(
-                color: _hovered
-                    ? AppColors.primary.withValues(alpha: 0.30)
-                    : AppColors.cardBorder,
-              ),
-              boxShadow: _shadow,
-            ),
-            padding: const EdgeInsets.all(AppSizes.cardPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize:
-                  widget.fixedHeight ? MainAxisSize.max : MainAxisSize.min,
-              children: [
-                // ── Icon container ──────────────────────────────────────
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: _hovered
-                        ? AppColors.primary.withValues(alpha: 0.15)
-                        : AppColors.primarySurface,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMid),
-                  ),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      widget.feature.svg,
-                      width: 26,
-                      height: 26,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: AppSizes.itemPadding),
-
-                // ── Title ───────────────────────────────────────────────
-                Text(
-                  widget.feature.title,
-                  style: AppTextStyles.cardTitle,
-                ),
-
-                const SizedBox(height: 6),
-
-                // ── Description ─────────────────────────────────────────
-                Text(
-                  widget.feature.description,
-                  style: AppTextStyles.pageSubtitle.copyWith(
-                    fontSize: 13,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+    return Container(
+      width: 48, height: 48,
+      decoration: BoxDecoration(
+        color:         AppColors.primarySurface,
+        borderRadius:  BorderRadius.circular(AppSizes.radiusMid),
+      ),
+      child: Center(
+        child: SvgPicture.asset(svgPath, width: 24, height: 24),
       ),
     );
   }

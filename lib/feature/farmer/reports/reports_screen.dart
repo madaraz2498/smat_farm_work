@@ -406,7 +406,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FeatureAppBar(
+      appBar: const CustomAppBar(
         title:   'Reports',
         svgPath: 'assets/images/icons/reports_icon.svg',
       ),

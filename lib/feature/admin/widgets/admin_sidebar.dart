@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_farm/feature/admin/pages/admin_settings_page.dart';
 import 'package:smart_farm/providers/auth_provider.dart';
 import 'package:smart_farm/theme/app_theme.dart';
 
@@ -23,24 +22,12 @@ class AdminNavItem {
   });
 }
 
-// ─── Canonical Admin nav items ─────────────────────────────────────────────────
-
-const List<AdminNavItem> kAdminNavItems = [
-  AdminNavItem(icon: Icons.dashboard_outlined, label: 'Dashboard'),
-  AdminNavItem(icon: Icons.people_outline, label: 'User Management', isAdminOnly: true),
-  AdminNavItem(icon: Icons.bar_chart_outlined, label: 'System Reports', isAdminOnly: true),
-  AdminNavItem(icon: Icons.settings_outlined, label: 'Settings', isAdminOnly: true),
-];
-
-const int kAdminSettingsIndex = 3;
-
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────
 
 class AdminSidebar extends StatelessWidget {
   final List<AdminNavItem> navItems;
   final int selectedIndex;
   final void Function(int index) onTap;
-  final VoidCallback? onSettingsPopped;
   final VoidCallback onSignOut;
 
   const AdminSidebar({
@@ -49,7 +36,6 @@ class AdminSidebar extends StatelessWidget {
     required this.selectedIndex,
     required this.onTap,
     required this.onSignOut,
-    this.onSettingsPopped,
   });
 
   @override
@@ -68,6 +54,7 @@ class AdminSidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(AppSizes.pagePadding),
               children: [
+                // Section label
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
@@ -87,30 +74,16 @@ class AdminSidebar extends StatelessWidget {
                     child: AdminNavTile(
                       item: navItems[i],
                       isSelected: selectedIndex == i,
-                      onTap: () => _handleTap(context, i),
+                      onTap: () => onTap(i),
                     ),
                   );
                 }),
               ],
             ),
           ),
-          const Divider(color: AppColors.cardBorder, height: 1),
-          _SignOutRow(onSignOut: onSignOut),
         ],
       ),
     );
-  }
-
-  void _handleTap(BuildContext context, int index) {
-    if (index == kAdminSettingsIndex) {
-      onTap(index);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminSettingsScreen()),
-      ).then((_) => onSettingsPopped?.call());
-      return;
-    }
-    onTap(index);
   }
 }
 
@@ -120,7 +93,6 @@ class AdminDrawer extends StatelessWidget {
   final List<AdminNavItem> navItems;
   final int selectedIndex;
   final void Function(int index) onTap;
-  final VoidCallback? onSettingsPopped;
   final VoidCallback onSignOut;
 
   const AdminDrawer({
@@ -129,16 +101,12 @@ class AdminDrawer extends StatelessWidget {
     required this.selectedIndex,
     required this.onTap,
     required this.onSignOut,
-    this.onSettingsPopped,
   });
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
     final userName = user?.name ?? '';
-    final userRole = (user?.role != null && user!.role.isNotEmpty)
-        ? user.role.toLowerCase()
-        : 'administrator';
 
     return Drawer(
       backgroundColor: AppColors.surface,
@@ -169,7 +137,6 @@ class AdminDrawer extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(userName, style: const TextStyle(color: Colors.white70, fontSize: 13)),
                       ],
-                      Text(userRole, style: const TextStyle(color: Colors.white60, fontSize: 11)),
                     ],
                   ),
                 ),
@@ -200,7 +167,7 @@ class AdminDrawer extends StatelessWidget {
                       isSelected: selectedIndex == i,
                       onTap: () {
                         Navigator.pop(context);
-                        _handleTap(context, i);
+                        onTap(i);
                       },
                     ),
                   );
@@ -208,26 +175,9 @@ class AdminDrawer extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(color: AppColors.cardBorder, height: 1),
-          _SignOutRow(onSignOut: () {
-            Navigator.pop(context);
-            onSignOut();
-          }),
         ],
       ),
     );
-  }
-
-  void _handleTap(BuildContext context, int index) {
-    if (index == kAdminSettingsIndex) {
-      onTap(index);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminSettingsScreen()),
-      ).then((_) => onSettingsPopped?.call());
-      return;
-    }
-    onTap(index);
   }
 }
 
@@ -313,30 +263,6 @@ class AdminNavTile extends StatelessWidget {
               ],
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── _SignOutRow ──────────────────────────────────────────────────────────────
-
-class _SignOutRow extends StatelessWidget {
-  final VoidCallback onSignOut;
-  const _SignOutRow({required this.onSignOut});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onSignOut,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Row(
-          children: const [
-            Icon(Icons.logout_rounded, size: 18, color: AppColors.textSubtle),
-            SizedBox(width: 12),
-            Text('Sign out', style: TextStyle(fontSize: 13, color: AppColors.textSubtle)),
-          ],
         ),
       ),
     );

@@ -1,39 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smart_farm/feature/farmer/dashboard/components/dashboard_constants.dart';
 import '../theme/app_theme.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FeatureAppBar
 //
 // The standard AppBar used by every feature screen (Plant Disease, Animal
 // Weight, Crop Recommendation, Soil Analysis, Fruit Quality, Chatbot).
 // ─────────────────────────────────────────────────────────────────────────────
 
-class FeatureAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String svgPath;
   final List<Widget>? actions;
   final bool showBack;
 
-
-  const FeatureAppBar({
+  const CustomAppBar({
 
     super.key,
     required this.title,
     required this.svgPath,
     this.actions,
     this.showBack = true,
+
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 1);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 13); // 1 (divider) + 12 (margin)
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    return AppBar(
+    // 2. تغليف الـ AppBar بـ Padding من الأعلى
+    return Padding(
+        padding: const EdgeInsets.only(top: 12.0), // المسافة التي تريدها
+        child: AppBar(
+          centerTitle: true,
       automaticallyImplyLeading: false,
       backgroundColor: AppColors.surface,
       surfaceTintColor: Colors.transparent,
@@ -48,6 +52,7 @@ class FeatureAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           _IconChip(svgPath: svgPath, cs: cs),
           const SizedBox(width: 10),
@@ -66,6 +71,7 @@ class FeatureAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: actions,
       bottom: const _BottomDivider(),
+            ),
     );
   }
 }
@@ -109,14 +115,12 @@ class _BottomDivider extends StatelessWidget implements PreferredSizeWidget {
 
 class DashboardNavBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
-  final String userRole;
   final bool showBurger;
   final VoidCallback onNotificationTap;
 
   const DashboardNavBar({
     super.key,
     required this.userName,
-    required this.userRole,
     required this.showBurger,
     required this.onNotificationTap,
   });
@@ -146,7 +150,6 @@ class DashboardNavBar extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColors.textDark, size: 22),
               ),
             ),
-          _LogoChip(cs: cs),
           const SizedBox(width: 10),
           if (!showBurger)
             Text(
@@ -158,32 +161,15 @@ class DashboardNavBar extends StatelessWidget implements PreferredSizeWidget {
           const Spacer(),
           _NotifBell(onTap: onNotificationTap),
           const SizedBox(width: 4),
-          const _ThemeToggle(),
+          _UserChip(name: userName , cs: cs),
           const SizedBox(width: 4),
-          _UserChip(name: userName, role: userRole, cs: cs),
         ],
       ),
     );
   }
 }
 
-class _LogoChip extends StatelessWidget {
-  final ColorScheme cs;
-  const _LogoChip({required this.cs});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(Icons.eco_rounded, color: Colors.white, size: 20),
-    );
-  }
-}
 
 class _NotifBell extends StatelessWidget {
   final VoidCallback onTap;
@@ -218,23 +204,10 @@ class _NotifBell extends StatelessWidget {
   }
 }
 
-class _ThemeToggle extends StatelessWidget {
-  const _ThemeToggle();
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {},
-      icon: const Icon(Icons.wb_sunny_outlined,
-          size: 20, color: AppColors.textDark),
-    );
-  }
-}
-
 class _UserChip extends StatelessWidget {
   final String name;
-  final String role;
   final ColorScheme cs;
-  const _UserChip({required this.name, required this.role, required this.cs});
+  const _UserChip({required this.name, required this.cs});
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +218,7 @@ class _UserChip extends StatelessWidget {
           width: 32,
           height: 32,
           decoration:
-              const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+          const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
           child: const Icon(Icons.person_rounded, color: Colors.white, size: 16),
         ),
         const SizedBox(width: 8),
@@ -254,9 +227,9 @@ class _UserChip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
-                style: AppTextStyles.label.copyWith(color: AppColors.textDark)),
-            Text(role,
-                style: AppTextStyles.caption.copyWith(color: AppColors.textSubtle)),
+                style: AppTextStyles.label.copyWith(color: AppColors.textDark,
+                ),
+            ),
           ],
         ),
       ],

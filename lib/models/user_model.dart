@@ -2,13 +2,11 @@ class UserModel {
   final String id;
   final String name;
   final String email;
-  final String role;
 
   const UserModel({
     required this.id,
     required this.name,
     required this.email,
-    required this.role,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -16,7 +14,6 @@ class UserModel {
       id: map['id'] as String,
       name: map['name'] as String,
       email: map['email'] as String,
-      role: map['role'] as String,
     );
   }
 
@@ -25,7 +22,6 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      'role': role,
     };
   }
 
@@ -39,7 +35,6 @@ class UserModel {
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-      role: role ?? this.role,
     );
   }
 }
