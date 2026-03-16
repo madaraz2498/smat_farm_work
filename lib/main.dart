@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_farm/feature/auth/login_screen.dart';
 import 'package:smart_farm/providers/auth_provider.dart';
-import 'package:smart_farm/feature/admin/admin_dashboard_screen.dart';
 import 'package:smart_farm/providers/navigation_provider.dart';
+import 'feature/admin/admin_main_shell.dart';
 import 'feature/farmer/dashboard/welcome_screen.dart';
 
 void main() {
@@ -72,7 +72,7 @@ class _DevPickerScreen extends StatelessWidget {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const AdminDashboardScreen()),
+                      builder: (_) => const AdminMainShell()),
                 ),
                 icon: const Icon(Icons.admin_panel_settings_rounded),
                 label: const Text('Admin Dashboard'),

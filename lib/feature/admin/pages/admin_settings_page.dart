@@ -11,14 +11,14 @@ import '../widgets/seetings_tile.dart';
 // Sections: Profile, System, User Management, Security, Logs, Danger Zone.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-class AdminSettingsScreen extends StatefulWidget {
-  const AdminSettingsScreen({super.key});
+class AdminSettingsPage extends StatefulWidget {
+  const AdminSettingsPage({super.key});
 
   @override
-  State<AdminSettingsScreen> createState() => _AdminSettingsScreenState();
+  State<AdminSettingsPage> createState() => _AdminSettingsPageState();
 }
 
-class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
+class _AdminSettingsPageState extends State<AdminSettingsPage> {
   late final TextEditingController _adminNameCtrl;
   late final TextEditingController _adminEmailCtrl;
   late final TextEditingController _baseUrlCtrl;
