@@ -62,6 +62,7 @@ class SideBarDrawer extends StatelessWidget {
   final List<NavItem> navItems;
   final void Function(int index) onNavigate;
 
+
   const SideBarDrawer({
     super.key,
     required this.navItems,
